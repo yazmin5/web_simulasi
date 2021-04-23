@@ -1,0 +1,67 @@
+{% load static %}
+
+    <!-- **** Header Area Start **** -->
+    <header class="header-area">
+        <!-- Top Header Area Start -->
+        <div class="top-header-area">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-6">
+                        <div class="top-header-content">
+                            <a href="#"><i class="icon_phone"></i> <span>Dikembangkan Oleh ...</span></a>
+                            <a href="#"><i class="icon_mail"></i> <span>email admin/representatif</span></a>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="top-header-content">
+                            <!-- Top Social Area -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Top Header Area End -->
+
+        <!-- Main Header Start -->
+        <div class="main-header-area animated">
+            <div class="classy-nav-container breakpoint-off">
+                <div class="container">
+                    <!-- Classy Menu -->
+                    <nav class="classy-navbar justify-content-between" id="rehomesNav">
+
+                        <!-- Logo -->
+                        <a class="nav-brand" href="{% url 'home' %}"><img src="{% static 'docs/img/core-img/4.png' %}" style="max-width:400px;max-height:90px;object-fit:contain;" alt=""></a>
+
+                        <!-- Navbar Toggler -->
+                        <div class="classy-navbar-toggler">
+                            <span class="navbarToggler"><span></span><span></span><span></span></span>
+                        </div>
+
+                        <!-- Menu -->
+                        <div class="classy-menu">
+                            <!-- Menu Close Button -->
+                            <div class="classycloseIcon">
+                                <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
+                            </div>
+                            <!-- Nav Start -->
+                            <div class="classynav">
+                                <ul id="nav">
+                                    <li class="active"><a href="{% url 'home' %}">Home</a></li>
+                                    <li><a href="">PageRank</a></li>
+                                    <li><a href="">EpiRank</a></li>
+                                    <li><a href="">Distance Decay PageRank</a></li>
+                                </ul>
+
+                                <!-- Contact btn -->
+                                <div class="contact-btn mt-3 mt-lg-0 ml-3 ml-lg-5">
+                                    <a href="/admin/">Admin</a>
+                                </div>
+                            </div>
+                            <!-- Nav End -->
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- **** Header Area End **** -->
