@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<br>
+<div class="rehomes-properties-area">
+    <div class="container">
+        <div class="justify-content-between row">
+            <div class="col-12 col-lg-12">
+                <div class="rehomes-comment-form mb-80 wow fadeInUp" data-wow-delay="200ms">
+                    <h4 class="mb-30">Halaman Prediksi Menggunakan Algoritma EpiRank</h4>
+                    
+                    <!-- Brief Introductions -->
+                    <div class="col-12 col-lg-12 information-area mb-80 wow update">
+                        <p style="text-align: justify;">
+                            Algoritma EpiRank pemodelan dilakukan dengan menggunakan prinsip 
+                            yang ada pada Markov Chain untuk menangkap dan mengukur efek transitif 
+                            yang ada pada suatu jaringan, kemudian algoritma PageRank juga digunakan 
+                            pada pemodelan untuk menangkap efek gerakan dua arah (komuter/bidireksional). 
+                            Dalam penelitian tersebut pergerakan manusia di sepesifikasi menjadi pergerakan 
+                            komuter. Pergerakan ini dimodelkan menjadi suatu graf bidireksional.
+                            Dalam graf ini, edge  (sisi) mewakili pergerakan manusia dan node (simpul) nya 
+                            mewakili titik spasial suatu kota/kabupaten. Hasil dari penelitian ini merupakan 
+                            prediksi status risiko epidemi suatu daerah, kemudian akan dibandingkan dengan 
+                            risiko epidemi berdasarkan data aktual.
+                        </p>
+                        <p style="text-align: justify;">
+                            Elemen Markov Chain yang digunakan pada algoritma EpiRank adalah penggunaan Matriks 
+                            Transisi. Matriks transisi didefinisikan sebagai probabilitas sistem berada dalam 
+                            status setelah berada dalam status j (pada pengamatan apa pun) (Yang. 2020). Dalam 
+                            penelitian ini matriks transisi dibuat berdasarkan jumlah pergerakan keluar dari 
+                            suatu wilayah yang sudah terjadi sebelumnya.
+                        </p>
+                        <p>
+                            <img src="{% static '/img/core-img/rumus-epirank.png' %}" alt="Rumus Algoritma Epirank" style="width: 600px;" >
+                        </p>
+                        <p>
+                            Dengan ERt+1 dan ERt adalah nilai distribusi ER pada iterasi t + 1 dan t. ER0 adalah status awal, 
+                            diset pada 1/n. Kemudian d adalah efek dari struktur topologi jaringan pada risiko epidemi dalam 
+                            kisaran 0 dan 1. Dan (1 − d) mewakili efek penyebaran penyakit yang terkait dengan faktor lingkungan l
+                            okal daripada struktur topologi jaringan. Kemudian exFac adalah efek eksternal tidak dapat ditentukan 
+                            yang mempengaruhi risiko epidemi, FWt  dan BWt  adalah efek dari gerakan maju dan mundur pada iterasi t, 
+                            dan daytime adalah 0−1 parameter yang mengendalikan perbedaan antara FWt  dan BWt , dengan nilai daytime 
+                            yang lebih tinggi menunjukkan lebih banyak pergerakan maju (forward) dari pada gerakan mundur (backward) 
+                            dan sebaliknya. Matriks OD ( origin-destination )merekam konektivitas dari asal (baris di matriks) ke 
+                            tujuan (kolom). Kemudian W adalah matriks standarisasi untuk matriks OD (origin-destination), dan WT 
+                            adalah matriks standarisasi yang juga merupakan matriks transisi. 
+                        </p>
+
+                        <P>
+                            <b>Karena algoritma EpiRank memprediksi penyebaran virus melalui pergerakan komuter, input utama untuk algoritma 
+                            ini adalah file csv yang mengandung informasi pergerakan antar kota pada dua waktu yaitu BERANGKAT dan PULANG.
+                            Contoh input untuk algoritma EpiRank adalah sebagai berikut: </b> 
+                        </P>
+                        <p>
+                            <img src="{% static '/img/core-img/contoh input.png' %}" alt="File Berangkat" style="height: 600px;" >
+                            <img src="{% static '/img/core-img/contoh_input2.png' %}" alt="File Pulang" style="height: 550px;" >
+                        </p>
+
+
+                    </div>
+
+                    <!-- Form -->
+                    <div class="col-12 col-lg-12 information-area mb-80 wow update" style="background-color: lightgray; padding: 50px;">
+                        <h4 class="mb-30">Form Input</h4>
+                        <table class="col-12 col-lg-12" style="color: black;">
+                            <form class="#" method="POST" enctype="multipart/form-data" style="color: black;" action="{% url 'resultEpiRank' %}">
+                                {% csrf_token %}
+                                <div> <label for="file_departing" style="font-weight: bold;">Upload File Pergerakan Berangkat</label> </div> <input type="file" name="File_Berangkat" value="{{ temp.file_departing }}"> <br><br>
+                                <div> <label for="file_coming_back" style="font-weight: bold;">Upload File Pergerakan Pulang</label> </div> <input type="file" name="File_Pulang" value="{{ temp.file_coming_back }}"> <br><br>
+                                <div> <label for="daytime" style="font-weight: bold;">Tentukan Nilai Daytime (Nilai akan dibagi 100, daytime bernilai antara 0-1)</label> </div> <input type="number" name="daytime" value="{{ temp.daytime }}"> <br><br>
+                                <div> <label for="damping" style="font-weight: bold;">Tentukan Nilai Damping Factor (Nilai akan dibagi 100, damping factor bernilai antara 0-1) </label> </div> <input type="number" name="damping" value="{{ temp.damping }}"> <br><br>
+                                
+                                <input type="submit" value="submit" name="submit" class="btn rehomes-btn mt-15" style="background-color:#cc2900;color:white;">
+                        </form>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

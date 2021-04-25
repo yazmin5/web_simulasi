@@ -15,9 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import url
 from Algorithms import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.landingPage, name="home"),
+    path('EpiRank', views.EpiRank, name="EpiRank"),
+    url('predictEpiRank', views.predictEpiRank, name="predictEpiRank "),
+    path('resultEpiRank', views.resultEpiRank, name="resultEpiRank" ),
 ]

@@ -30,7 +30,7 @@
                     <nav class="classy-navbar justify-content-between" id="rehomesNav">
 
                         <!-- Logo -->
-                        <a class="nav-brand" href="{% url 'home' %}"><img src="{% static 'docs/img/core-img/4.png' %}" style="max-width:400px;max-height:90px;object-fit:contain;" alt=""></a>
+                        <a class="nav-brand" href="{% url 'home' %}"><img src="{% static 'img/core-img/4.png' %}" style="max-width:400px;max-height:90px;object-fit:contain;" alt=""></a>
 
                         <!-- Navbar Toggler -->
                         <div class="classy-navbar-toggler">
@@ -48,7 +48,7 @@
                                 <ul id="nav">
                                     <li class="active"><a href="{% url 'home' %}">Home</a></li>
                                     <li><a href="">PageRank</a></li>
-                                    <li><a href="">EpiRank</a></li>
+                                    <li><a href="{% url 'EpiRank' %}">EpiRank</a></li>
                                     <li><a href="">Distance Decay PageRank</a></li>
                                 </ul>
 
