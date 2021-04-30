@@ -10,7 +10,7 @@
         <div class="justify-content-between row">
             <div class="col-12 col-lg-12">
                 <div class="rehomes-comment-form mb-80 wow fadeInUp" data-wow-delay="200ms">
-                    <h4 class="mb-30">Halaman Prediksi Menggunakan Algoritma EpiRank</h4>
+                    <h4 class="mb-30">Halaman Input Data Prediksi Menggunakan Algoritma EpiRank</h4>
                     
                     <!-- Brief Introductions -->
                     <div class="col-12 col-lg-12 information-area mb-80 wow update">
@@ -66,18 +66,15 @@
                     <div class="col-12 col-lg-12 information-area mb-80 wow update" style="background-color: lightgray; padding: 50px;">
                         <h4 class="mb-30">Form Input</h4>
                         <table class="col-12 col-lg-12" style="color: black;">
-                            <form class="#" method="POST" enctype="multipart/form-data" style="color: black;" action="{% url 'resultEpiRank' %}">
+                            <form class="#" method="POST" enctype="multipart/form-data" style="color: black;">
                                 {% csrf_token %}
-                                <div> <label for="file_departing" style="font-weight: bold;">Upload File Pergerakan Berangkat</label> </div> <input type="file" name="File_Berangkat" value="{{ temp.file_departing }}"> <br><br>
-                                <div> <label for="file_coming_back" style="font-weight: bold;">Upload File Pergerakan Pulang</label> </div> <input type="file" name="File_Pulang" value="{{ temp.file_coming_back }}"> <br><br>
-                                <div> <label for="daytime" style="font-weight: bold;">Tentukan Nilai Daytime (Nilai akan dibagi 100, daytime bernilai antara 0-1)</label> </div> <input type="number" name="daytime" value="{{ temp.daytime }}"> <br><br>
-                                <div> <label for="damping" style="font-weight: bold;">Tentukan Nilai Damping Factor (Nilai akan dibagi 100, damping factor bernilai antara 0-1) </label> </div> <input type="number" name="damping" value="{{ temp.damping }}"> <br><br>
-                                
-                                <input type="submit" value="submit" name="submit" class="btn rehomes-btn mt-15" style="background-color:#cc2900;color:white;">
-                        </form>
+                                {{ form.as_table }}
                         </table>
+                        <input type="submit" name="submit" class="btn rehomes-btn mt-15" style="background-color:#cc2900;color:white;" href="">
                     </div>
-
+                    <div class="contact-btn mt-3 mt-lg-0 ml-3 ml-lg-5">
+                        <a class="btn rehomes-btn mt-15" style="background-color:#cc2900;color:white;" href="DocsEpiRank">Data yang sudah diinput</a>
+                    </div>
                 </div>
             </div>
 

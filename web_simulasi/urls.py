@@ -17,11 +17,16 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import url
 from Algorithms import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.landingPage, name="home"),
     path('EpiRank', views.EpiRank, name="EpiRank"),
-    url('predictEpiRank', views.predictEpiRank, name="predictEpiRank "),
-    path('resultEpiRank', views.resultEpiRank, name="resultEpiRank" ),
+    path('DocsEpiRank', views.DocsEpiRank, name="DocsEpiRank" ),
+    path('resultEpiRank/<str:pk>/', views.resultEpiRank, name="resultEpiRank"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

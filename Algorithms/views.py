@@ -1,38 +1,30 @@
-from django.shortcuts import render
-import joblib
+from django.shortcuts import render, redirect
+from django.template import loader 
+from .models import *
+from .forms import DocsForms
+from .Epirank import *
 
 # Create your views here.
 def landingPage(request):
    return render(request, 'landingPage.html')
 
 def EpiRank(request):
-   return render(request, 'EpiRank.html')
-
-def predictEpiRank(request):
+   form = DocsForms()
    if request.method == 'POST':
-      temp={}
-      temp['File_Berangkat']=request.POST.get('File_Berangkat')
-      temp['File_Pulang']=request.POST.get('File_Pulang')
-      temp['daytime']=request.POST.get('daytime')
-      temp['damping']=request.POST.get('damping')
+      form = DocsForms(request.POST, request.FILES)
+      if form.is_valid():
+         form.save()
+         return redirect('DocsEpiRank')
+   
+   context = {'form':form}
+   return render(request, 'EpiRank.html', context)
 
-   return None
+def DocsEpiRank(request):
+   documents = Documents.objects.all()
+   context = {'documents':documents}
+   return render(request, "DocsEpirank.html", context)
 
-def resultEpiRank(request):
-   epirank_algorithm = joblib.load('model/Epirank_model.pkl')
-
-   if request.method == 'POST':
-      temp={}
-      temp['File_Berangkat']=request.POST.get('File_Berangkat')
-      temp['File_Pulang']=request.POST.get('File_Pulang')
-      temp['daytime']=request.POST.get('daytime')
-      temp['damping']=request.POST.get('damping')
-
-   File_Berangkat = temp['File_Berangkat']
-   File_Pulang = temp['File_Pulang']
-   daytime = temp['daytime']
-   damping = temp['damping']
-
-   ans = epirank_algorithm(File_Berangkat, File_Pulang, daytime, damping)
-
-   return render(request, "result.html", {'ans': ans} )
+def resultEpiRank(request, pk):
+   document = Documents.objects.get(id=pk)
+   context = {'document':document}
+   return render(request, "resultEpirank.html", context)
