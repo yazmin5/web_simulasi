@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<br>
+<div class="rehomes-properties-area">
+    <div class="container">
+        <div class="justify-content-between row">
+            <div class="col-12 col-lg-12">
+                <div class="rehomes-comment-form mb-80 wow fadeInUp" data-wow-delay="200ms">
+                    <h4 class="mb-30">Halaman Hasil Prediksi Menggunakan Algoritma EpiRank</h4>
+                    
+                    <!-- Brief Introductions -->
+                    <h5>Nama Prediksi : {{ document.name }}</h5>
+                    <div class="col-8 col-lg-8" style="float: left;">
+                        <br>
+                        <table class="table">
+                            <tr>
+                                <th>Kota</th>
+                                <th>Nilai EpiRank</th>
+                            </tr>
+                            {% for i,j in epi_vals.items %}
+                                <tr>
+                                    <td>{{ i }}</td>
+                                    <td> {{j}} </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <div  style="float: left;">
+                        <br>
+                        <table class="table">
+                            <tr>
+                                <th>Prediksi Status </th>
+                            </tr>
+                            {% for i,j in gb1.items %}
+                                <tr>
+                                    <td>{{j}}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+                <div class="col-8 col-lg-8">
+                    <p>Prediksi Status terbagi pada 3 level: 
+                        <br>
+                     Prediksi Status 2 = resiko tinggi,
+                     Prediksi Status 1 = resiko sedang,
+                     Prediksi Status 0 = resiko rendah</p>
+                </div>
+                <div class="col-8 col-lg-8">
+                    <h5>Visualisasi Graph</h5>
+                    {{ pict1 }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

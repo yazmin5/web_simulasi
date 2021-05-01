@@ -14,15 +14,13 @@ def make_DiGraph(df, origin_col='origin', destination_col='destination', flow_co
     if exclude_selfloop:
         g.remove_edges_from(g.selfloop_edges())
     print('graph construction done,'+' no. nodes: '+str( g.number_of_nodes()) +', no. edges: '+str(g.number_of_edges()))
-    nx.draw(g, with_labels = True)
+    # nx.draw(g, with_labels = True)
     # edge_labels = nx.draw_networkx_edge_labels(g, pos=nx.spring_layout(g))
     return g
 
 def run_epiRank(g1, g2, d=0.95, daytime=0.5, number_of_loops=1000, exfac=None):
     graph_depart = make_DiGraph(g1, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=False, exclude_selfloop=False)
-    nx.draw(graph_depart, with_labels = True)
     graph_comeback = make_DiGraph(g2, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=False, exclude_selfloop=False)
-    nx.draw(graph_comeback, with_labels = True)
 
     # g1 for department, g2 for coming back
     g1 = graph_depart
@@ -164,6 +162,8 @@ def get_exfac(exfackey, g): # the inputs are exfac and a graph. the exfac values
         exfac = get_exfac(None, g)
     return exfac
 
+import copy
+
 def htbreak(adic, g):
     alist = [ v for k,v in adic.items() ]
     temp = copy.copy(alist)
@@ -191,16 +191,16 @@ def htbreak(adic, g):
 # **************************** COUNTING STARTS *********************
 
 # read csv for departing
-depart = pd.read_csv('/Users/yasminlukman/Documents/S.kom/Skripsi/Data Graf Epirank/individual/departing.csv', index_col=0)
-# read csv for coming back
-come_back = pd.read_csv('/Users/yasminlukman/Documents/S.kom/Skripsi/Data Graf Epirank/individual/comingBack.csv', index_col=0)
+# depart = pd.read_csv('/Users/yasminlukman/Documents/S.kom/Skripsi/Data Graf Epirank/individual/departing.csv', index_col=0)
+# # read csv for coming back
+# come_back = pd.read_csv('/Users/yasminlukman/Documents/S.kom/Skripsi/Data Graf Epirank/individual/comingBack.csv', index_col=0)
 
 # make graphs visualizations
 # graph_depart = make_DiGraph(depart, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=False, exclude_selfloop=False)
 # graph_comeback = make_DiGraph(come_back, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=False, exclude_selfloop=False)
 
 # count epirank values
-epi_vals = run_epiRank(depart, come_back, daytime=0.5, d=0.95)
+# epi_vals = run_epiRank(depart, come_back, daytime=0.5, d=0.95)
 # print('done')
 # for k,v in epi_vals.items():
 #     print(k,v)
@@ -228,9 +228,9 @@ epi_vals = run_epiRank(depart, come_back, daytime=0.5, d=0.95)
 # epirank_pipeline.fit(depart, come_back)
 
 # **************************** SAVES THE MODEL *********************
-import joblib
+# import joblib
 
-model = run_epiRank()
+# model = run_epiRank()
 
-file_name = "Epirank_model.pkl"
-joblib.dump(model, file_name)
+# file_name = "Epirank_model.pkl"
+# joblib.dump(model, file_name)
