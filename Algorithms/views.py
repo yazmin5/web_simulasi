@@ -38,8 +38,6 @@ def resultEpiRank(request, pk):
    
    epi_vals = run_epiRank(depart, come_back)
    gb1,bb = htbreak(epi_vals, 3)
-   # pict1 = nx.draw(depart, with_labels = True)
-   # pict2 = nx.draw(come_back, with_labels = True)
    
    context = {'document':document, 'epi_vals':epi_vals, 'gb1':gb1}
    return render(request, "EpiRank/result.html", context)
