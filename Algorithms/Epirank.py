@@ -1,6 +1,8 @@
 import pandas as pd    # input DataFrame
 import networkx as nx  # main data format
 import numpy as np     # making matrix and multiplication
+import copy
+import matplotlib.pyplot as plt 
 
 def make_DiGraph(df, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=True, exclude_selfloop=True):
     origins = df[origin_col].tolist()
@@ -13,7 +15,7 @@ def make_DiGraph(df, origin_col='origin', destination_col='destination', flow_co
         g = max(nx.weakly_connected_component_subgraphs(g), key=len)
     if exclude_selfloop:
         g.remove_edges_from(g.selfloop_edges())
-    print('graph construction done,'+' no. nodes: '+str( g.number_of_nodes()) +', no. edges: '+str(g.number_of_edges()))
+    # print('graph construction done,'+' no. nodes: '+str( g.number_of_nodes()) +', no. edges: '+str(g.number_of_edges()))
     # nx.draw(g, with_labels = True)
     # edge_labels = nx.draw_networkx_edge_labels(g, pos=nx.spring_layout(g))
     return g
@@ -67,7 +69,7 @@ def run_epiRank(g1, g2, d=0.95, daytime=0.5, number_of_loops=1000, exfac=None):
     
     ### initialize epidemic risk value matrix ###
     epidemic_risk = np.matrix(np.ones((1, Ncount))/float(Ncount)).transpose() ## init EpiRank values
-    print('preparation done, start iterating')
+    # print('preparation done, start iterating')
     
     ### start running ###
     for i in range(number_of_loops):
@@ -76,7 +78,7 @@ def run_epiRank(g1, g2, d=0.95, daytime=0.5, number_of_loops=1000, exfac=None):
         if np.ma.allequal(epidemic_risk, old_epidemic_risk): break
     
     #print('iteration count:', i)
-    print('epirank calculation done after iteration: '+str(i))
+    # print('epirank calculation done after iteration: '+str(i))
 
     ### prepare result dic ###
     vals = [ i[0] for i in epidemic_risk.tolist() ]
@@ -90,15 +92,15 @@ def run_epiRank(g1, g2, d=0.95, daytime=0.5, number_of_loops=1000, exfac=None):
         else: 
             epi_value[nodes[i]] = vals[i]
 
-    print("nilai EpiRank:")
-    for k,v in epi_value.items():
-        print(k,v)
+    # print("nilai EpiRank:")
+    # for k,v in epi_value.items():
+    #     print(k,v)
 
-    print("-----------------------------------------")
-    print("Klasifikasi level resiko epidemi:")
-    gb1,bb = htbreak(epi_value, 3)
-    for k,v in gb1.items():
-        print(k,v)
+    # print("-----------------------------------------")
+    # print("Klasifikasi level resiko epidemi:")
+    # gb1,bb = htbreak(epi_value, 3)
+    # for k,v in gb1.items():
+    #     print(k,v)
 
     return epi_value
 
