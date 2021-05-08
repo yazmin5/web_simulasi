@@ -9,7 +9,6 @@ import pandas as pd    # input DataFrame
 def landingPage(request):
    return render(request, 'landingPage.html')
 
-
 # ------------------------------- Epirank -----------------------------
 def EpiRank(request):
    form = DocsForms()
@@ -43,3 +42,8 @@ def resultEpiRank(request, pk):
    
    context = {'document':document, 'epi_vals':epi_vals, 'gb1':gb1, 'pict1':pict1, 'pict2':pict2}
    return render(request, "EpiRank/result.html", context)
+
+# ------------------------------- Pagerank -----------------------------
+def PageRank(request):
+
+   return render(request, 'PageRank/Form.html')

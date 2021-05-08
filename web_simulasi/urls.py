@@ -26,6 +26,7 @@ urlpatterns = [
     path('EpiRank', views.EpiRank, name="EpiRank"),
     path('DocsEpiRank', views.DocsEpiRank, name="DocsEpiRank" ),
     path('resultEpiRank/<str:pk>/', views.resultEpiRank, name="resultEpiRank"),
+    path('PageRank', views.PageRank, name="PageRank"),
 ]
 
 if settings.DEBUG:

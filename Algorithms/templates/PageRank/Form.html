@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<br>
+<div class="rehomes-properties-area">
+    <div class="container">
+        <div class="justify-content-between row">
+            <div class="col-12 col-lg-12">
+                <div class="rehomes-comment-form mb-80 wow fadeInUp" data-wow-delay="200ms">
+                    <h4 class="mb-30">Simulasi Pergerakan Manusia Dalam Penyebaran Covid-19 Menggunakan Algoritma Modifikasi Graph PageRank di Provinsi Jawa Timur</h4>
+                    
+                    <!-- Brief Introductions -->
+                    <div class="col-12 col-lg-12 information-area mb-80 wow update">
+                        <p style="text-align: justify;">
+                            Algoritme PageRank adalah suatu metode untuk mengkalkulasi dan memberikan peringkat pada setiap halaman web 
+                            berdasarkan struktur graf dari web tersebut (Page et al. 1999). Algoritme PageRank bisa diibaratkan sebagai metode 
+                            untuk memodelkan kebiasaan pengguna internet dalam menelusuri halaman web. Algoritme ini mengasumsikan bahwa pengguna 
+                            internet akan menjelajahi halaman web lain berdasarkan tautan yang ada pada halaman web yang sedang dikunjungi 
+                            (Brin dan Page 1998).
+
+                            Struktur graf pada web terdiri dari forward link (out-edges) dan backlink (in-edges). Gambar 1 menunjukan ilustrasi 
+                            dari forward link dan backlink dari suatu struktur graf. Halaman web B, C, dan D adalah backlinks dari halaman web A, 
+                            sebaliknya, halaman web A adalah forward links dari halaman web B, C, dan D.
+                        </p>
+
+                        <p>
+                            <img src="{% static '/img/core-img/Ilustrasi-PageRank.png' %}" alt="Ilustrasi Struktur Graf" style="width: 400px;" style="height: 600px;" >
+                        </p>
+
+                        <p style="text-align: justify;">
+                            Brin dan Page (1998) memberikan asumsi bahwa setiap halaman web memiliki halaman web Tj dengan j adalah banyak halaman 
+                            web yang menjadi backlink-nya dan C(Tj) adalah jumlah forward link dari halaman web Tj. Parameter d adalah damping factor 
+                            yang memiliki nilai antara 0 sampai 1. Brin dan Page (1998) memberikan persamaan di bawah ini untuk menghitung nilai PageRank 
+                            untuk setiap halaman web.
+                        </p>
+
+                        <p>
+                            <img src="{% static '/img/core-img/Persamaan-PageRank.png' %}" alt="Persamaan PageRank" style="width: 600px;" >
+                        </p>
+
+                        <p style="text-align: justify;">
+                            Persamaan di atas melakukan perhitungan terhadap nilai PageRank dari suatu halaman web dengan menjumlahkan hasil pembagian antara 
+                            nilai PageRank dari seluruh halaman web yang merupakan backlink dari halaman web tersebut dengan masing-masing forward link-nya. 
+                            Pada persamaan di atas, Brin and Page (1998) juga mengenalkan damping factor (d). Jika sebelumnya sudah dijelaskan bahwa Algoritme 
+                            PageRank bisa diibaratkan sebagai metode untuk memodelkan kebiasaan pengguna internet dalam menelusuri halaman web. Damping factor 
+                            adalah peluang pengguna internet untuk tetap mengikuti tautan pada halaman web yang sedang dikunjungi dan tidak mengunjungi halaman 
+                            web lain secara acak. Selain itu, persamaan di atas juga memerlukan informasi nilai PageRank awal untuk setiap halaman web, sehingga 
+                            nilai yang digunakan adalah sama untuk seluruh halaman web, yaitu 1n, dengan n adalah jumlah seluruh halaman web (Haveliwala 1999). 
+                            Perhitungan nilai PageRank akan bekerja secara iteratif hingga mencapai suatu kondisi kekonvergenan (Brin dan Page 1998). 
+                        </p>
+
+                        <p style="text-align: justify;">
+                            Namun, Algoritme PageRank memiliki batasan untuk melakukan perhitungan PageRank hanya dari satu struktur graf. Oleh sebab itu, 
+                            dikembangkan Algoritme Modifikasi Graph PageRank adalah pengembangan dari Algoritme PageRank yang ditemukan oleh Brin dan Page (1998).
+                            Algoritme ini memungkinkan perhitungan PageRank bisa dilakukan pada lebih dari satu struktur graf. Modifikasi yang dilakukan adalah 
+                            dengan memberikan bobot atau koefisien untuk hasil perhitungan dari masing-masing struktur graf. Persamaan Algoritme Modifikasi Graph 
+                            PageRank dapat dilihat pada persamaan di bawah ini.
+                        </p>
+
+                        <p>
+                            <img src="{% static '/img/core-img/Persamaan-Modifikasi.png' %}" alt="Persamaan Modifikasi Graph PageRank" style="width: 600px;" >
+                        </p>
+
+                        <p style="text-align: justify;">
+                            Persamaan di atas melakukan perhitungan dengan mengalikan hasil perhitungan PageRank dengan koefisien yang bersesuaian. Modifikasi yang 
+                            dilakukan pada penelitian ini adalah dengan menambahkan operasi sigma untuk melakukan perhitungan pada lebih dari satu struktur graf dan 
+                            menambahkan faktor β untuk memberikan bobot pada masing-masing struktur graf. Koefisien pada persamaan di atas didapatkan dengan menggunakan 
+                            analisis regresi.
+                        </p>
+
+
+                    </div>
+                    <!-- End of Brief Introductions -->
+
+                    <div class="col-8 col-lg-8">
+                        <h5>Visualisasi Graph</h5>
+                        {% if pict1 %}
+                            <h6>Visualisasi Graph Pergerakan Berangkat:</h6>
+                            <img src="data:image/png;base64, {{ pict1 }} " alt="">
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
