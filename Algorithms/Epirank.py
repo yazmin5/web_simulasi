@@ -2,7 +2,11 @@ import pandas as pd    # input DataFrame
 import networkx as nx  # main data format
 import numpy as np     # making matrix and multiplication
 import copy
-import matplotlib.pyplot as plt 
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib import pyplot as plt
+import base64
+from io import BytesIO
 
 def make_DiGraph(df, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=True, exclude_selfloop=True):
     origins = df[origin_col].tolist()
@@ -190,49 +194,22 @@ def htbreak(adic, g):
 
     return adic2, breaks
 
-# **************************** COUNTING STARTS *********************
+def get_graph():
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    graph = base64.b64encode(image_png)
+    graph = graph.decode('utf-8')
+    buffer.close()
+    return graph
 
-# read csv for departing
-# depart = pd.read_csv('/Users/yasminlukman/Documents/S.kom/Skripsi/Data Graf Epirank/individual/departing.csv', index_col=0)
-# # read csv for coming back
-# come_back = pd.read_csv('/Users/yasminlukman/Documents/S.kom/Skripsi/Data Graf Epirank/individual/comingBack.csv', index_col=0)
+def draw_graph(g):
+    g = make_DiGraph(g, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=False, exclude_selfloop=False)
+    # nx.draw(graph_image, with_labels = True)
+    plt.figure(figsize=(13, 8))
+    nx.draw(g, with_labels = True)
+    plt.draw()
+    graph = get_graph()
+    return graph
 
-# make graphs visualizations
-# graph_depart = make_DiGraph(depart, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=False, exclude_selfloop=False)
-# graph_comeback = make_DiGraph(come_back, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=False, exclude_selfloop=False)
-
-# count epirank values
-# epi_vals = run_epiRank(depart, come_back, daytime=0.5, d=0.95)
-# print('done')
-# for k,v in epi_vals.items():
-#     print(k,v)
-
-# # turning the results(data type= dict) into a dataframe
-# df = pd.DataFrame.from_dict(epi_vals,orient='index',columns=None) 
-# # Visualisazing EpiRank Values of each nodes
-# import matplotlib.pyplot as plt 
-# # plt.figure(figsixe=(8,5))
-# plt.plot(df)
-# plt.show()
-
-# # clasification with head/tail breaks
-# gb1,bb = htbreak(epi_vals, 3)
-# for k,v in gb1.items():
-#     print(k,v)
-
-# put steps into pipeline
-# from sklearn.pipeline import pipeline
-# epirank_pipeline = Pipeline([('make_graph_depart',make_DiGraph(origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=False, exclude_selfloop=False)),
-#                      ('make_graph_comeback',make_DiGraph(origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=False, exclude_selfloop=False)),
-#                      ('run_Epirank',run_epiRank(daytime=0.5, d=0.95)),
-#                      ('classification',htbreak(g=3))])
-
-# epirank_pipeline.fit(depart, come_back)
-
-# **************************** SAVES THE MODEL *********************
-# import joblib
-
-# model = run_epiRank()
-
-# file_name = "Epirank_model.pkl"
-# joblib.dump(model, file_name)

@@ -43,17 +43,26 @@
                         </table>
                     </div>
                 </div>
-                <div class="col-8 col-lg-8">
-                    <p>Prediksi Status terbagi pada 3 level: 
+                <br>
+                <div class="col-12 col-lg-8">
+                    <p><b> Prediksi Status terbagi pada 3 level:  </b> 
                         <br>
-                     Prediksi Status 2 = resiko tinggi,
-                     Prediksi Status 1 = resiko sedang,
-                     Prediksi Status 0 = resiko rendah</p>
+                     Prediksi Status 2 = resiko <b>tinggi</b> ,
+                     Prediksi Status 1 = resiko <b>sedang</b> ,
+                     Prediksi Status 0 = resiko <b>rendah</b> </p>
                 </div>
+                <br>
             </div>
             <div class="col-8 col-lg-8">
                 <h5>Visualisasi Graph</h5>
-                {{ pict1 }}
+                {% if pict1 %}
+                    <h6>Visualisasi Graph Pergerakan Berangkat:</h6>
+                    <img src="data:image/png;base64, {{ pict1 }} " alt="">
+                {% endif %}
+                {% if pict2 %}
+                    <h6>Visualisasi Graph Pergerakan Pulang:</h6>
+                    <img src="data:image/png;base64, {{ pict2 }} " alt="">
+                {% endif %}
             </div>
         </div>
     </div>
