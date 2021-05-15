@@ -3,7 +3,8 @@ from django.template import loader
 from .models import *
 from .forms import DocsForms
 from .Epirank import run_epiRank, make_DiGraph, get_exfac, htbreak, draw_graph
-import pandas as pd    # input DataFrame
+from .Visualize import draw_spatial_graph
+import pandas as pd
 
 # Create your views here.
 def landingPage(request):
@@ -45,5 +46,10 @@ def resultEpiRank(request, pk):
 
 # ------------------------------- Pagerank -----------------------------
 def PageRank(request):
-
-   return render(request, 'PageRank/Form.html')
+   spatial_file = 'static/file/RBI250K_BATAS_KABUPATEN_AR PYTHON.shp'
+   od_file = 'static/documents/Rekonstruksi_Graf_Skripsi - MULTIVARIATE.csv'
+   
+   pict3 = draw_spatial_graph(spatial_file, od_file)
+   
+   context = {'pict3':pict3}
+   return render(request, 'PageRank/Form.html', context)
