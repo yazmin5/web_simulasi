@@ -3,6 +3,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import geopandas as gpd
 import pandas as pd
+import matplotlib
+matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 import base64
 from io import BytesIO
@@ -17,7 +19,7 @@ def get_graph():
     buffer.close()
     return graph
 
-def draw_graph(spatial_file, od_file):
+def draw_spatial_graph(spatial_file, od_file):
     # Read shp file
     gdf = gpd.read_file(spatial_file)
 
@@ -157,7 +159,8 @@ def draw_graph(spatial_file, od_file):
     label_list["Kota Madiun"] = "Kota Madiun (0.095)"
 
     # Plot the base map and set figure size
-    gdf.plot(figsize=(21,8))
+    # gdf.plot(figsize=(21,8))
+    gdf.plot(figsize=(40,15))
 
     # Plot the graph
     nx.draw(G, nx.get_node_attributes(G, 'pos'), node_size = (gdf_points['Nilai PageRank'])*350,
@@ -166,7 +169,8 @@ def draw_graph(spatial_file, od_file):
                             , font_size = 8, font_color = 'k')
 
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    plt.draw()
 
     graph = get_graph()
     return graph
