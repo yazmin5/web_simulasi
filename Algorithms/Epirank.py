@@ -194,16 +194,6 @@ def htbreak(adic, g):
 
     return adic2, breaks
 
-def get_graph():
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    image_png = buffer.getvalue()
-    graph = base64.b64encode(image_png)
-    graph = graph.decode('utf-8')
-    buffer.close()
-    return graph
-
 def draw_graph(g):
     g = make_DiGraph(g, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=False, exclude_selfloop=False)
     # nx.draw(graph_image, with_labels = True)
