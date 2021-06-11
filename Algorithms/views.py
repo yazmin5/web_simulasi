@@ -3,7 +3,7 @@ from django.template import loader
 from .models import *
 from .forms import DocsForms
 from .Epirank import run_epiRank, make_DiGraph, get_exfac, htbreak, draw_graph
-from .Visualize import draw_spatial_graph
+# from .Visualize import draw_spatial_graph
 import pandas as pd
 
 # Create your views here.
