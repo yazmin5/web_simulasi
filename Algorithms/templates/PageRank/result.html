@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<br>
+<div class="rehomes-properties-area">
+    <div class="container">
+        <div class="justify-content-between row">
+            <div class="col-12 col-lg-12">
+                <div class="rehomes-comment-form mb-80 wow fadeInUp" data-wow-delay="200ms">
+                    <h4 class="mb-30">Hasil Perhitungan dan Simulasi Menggunakan Algoritme Modifikasi Graph PageRank</h4>
+                    
+                    <!-- Table -->
+                    <h5>Nama Prediksi : {{ document.Nama }}</h5>
+                    <div style="float: left;">
+                        <br>
+                        <table class="table">
+                            <tr>
+                                <th>Peringkat</th>
+                            </tr>
+                            {% for idx in index_list %}
+                                <tr>
+                                    <td>{{ idx }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <div class="col-8 col-lg-8" style="float: left;">
+                        <br>
+                        <table class="table">
+                            <tr>
+                                <th>Kabupaten/Kota</th>
+                                <th>Nilai PageRank</th>
+                            </tr>
+                            {% for i, j in final_ranks.items %}
+                                <tr>
+                                    <td>{{ i }}</td>
+                                    <td> {{ j }} </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <div style="float: left;">
+                        <br>
+                        <table class="table">
+                            <tr>
+                                <th>Kategori</th>
+                            </tr>
+                            {% for i,j in htdict.items %}
+                                <tr>
+                                    <td>{{j}}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <!-- End of Table -->
+                    
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-8">
+                <h5> Nilai Koefisien Korelasi : {{ corr_coeff }} </h5> 
+            </div>
+
+            <div class="col-12 col-lg-12">
+                <h4>Visualisasi Graf</h4>
+                {% if pict %}
+                    <img src="data:image/png;base64, {{ pict }} " alt="">
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

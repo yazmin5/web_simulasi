@@ -2,11 +2,11 @@ from django.shortcuts import render, redirect
 from django.template import loader 
 from .models import *
 from .forms import DocsForms
+from .forms import DocsFormsPageRank
 from .Epirank import run_epiRank, make_DiGraph, get_exfac, htbreak, draw_graph
-# from .Visualize import draw_spatial_graph
+from .PageRank import make_DiGraph, create_ODMatrix, run_Modified_PageRank, make_Dict, get_pearson_cor, htbreak, draw_spatial_graph_central_java, draw_spatial_graph_east_java, draw_spatial_graph_bali
 import pandas as pd
 
-# Create your views here.
 def landingPage(request):
    return render(request, 'landingPage.html')
 
@@ -24,6 +24,7 @@ def EpiRank(request):
 
 def DocsEpiRank(request):
    documents = Documents.objects.all()
+   documents = documents.order_by('-date_input')
    context = {'documents':documents}
    return render(request, "EpiRank/Data.html", context)
 
@@ -44,12 +45,101 @@ def resultEpiRank(request, pk):
    context = {'document':document, 'epi_vals':epi_vals, 'gb1':gb1, 'pict1':pict1, 'pict2':pict2}
    return render(request, "EpiRank/result.html", context)
 
-# ------------------------------- Pagerank -----------------------------
+# ------------------------------- PageRank -----------------------------
 def PageRank(request):
-   spatial_file = 'static/file/RBI250K_BATAS_KABUPATEN_AR PYTHON.shp'
-   od_file = 'static/documents/Rekonstruksi_Graf_Skripsi - MULTIVARIATE.csv'
-   
-   pict3 = draw_spatial_graph(spatial_file, od_file)
-   
-   context = {'pict3':pict3}
+   form = DocsFormsPageRank()
+   if request.method == 'POST':
+      form = DocsFormsPageRank(request.POST, request.FILES, request.FILES)
+      if form.is_valid():
+         form.save()
+         return redirect('DocsPageRank')
+
+   context = {'form':form}
    return render(request, 'PageRank/Form.html', context)
+
+def DocsPageRank(request):
+   documents = DocumentsPageRank.objects.all()
+   documents = documents.order_by('-Tanggal')
+   context = {'documents':documents}
+   return render(request, "PageRank/Data.html", context)
+
+def resultPageRank(request, pk):
+   document = DocumentsPageRank.objects.get(id=pk)
+   wilayah = document.Wilayah
+   file_GDP = document.File_GDP
+   file_MAN = document.File_MAN
+   file_UNEM= document.File_UNEM
+   file_CRIM = document.File_CRIM
+   file_DENS = document.File_DENS
+   file_LIT = document.File_LIT
+   file_INF = document.File_INF
+   file_MIN = document.File_MIN
+   file_Cases = document.File_Cases
+
+   '''
+   ATTENTION: files_csv and coeff MUST be in the same order
+   '''
+
+   files_csv = [file_LIT, file_CRIM, file_MAN, file_DENS, file_GDP, file_INF, file_UNEM, file_MIN]
+
+   OD_Matrix_List = [] # Prepare list to store the OD Matrix of each file
+
+   coeff = [0.005888626148285406, 0.0404483855943423, 0.0983687893650872, 0.02609756597768234, 0.8263595276993987, -0.05640590716007701, 0.09487233256102165, -0.06171179914881331]
+
+   # Read files, create graph for each, and construct OD Matrix
+   for file in files_csv:
+
+      # Read the file which consists of a list of edges representing regions in East Java Province
+      df_graph = pd.read_csv(file, index_col = 0)
+
+      # Create graph
+      graph = make_DiGraph(df_graph, origin_col = 'Origin', destination_col = 'Destination')
+
+      # Create list of OD Matrix
+      OD_Matrix_List.append(create_ODMatrix(graph))
+
+   # Calculate scores
+   final_ranks = run_Modified_PageRank(graph, OD_Matrix_List, coeff)
+   
+   # Read the file which consists of number of Covid-19 cases in East Java Province by regions
+   df_cases = pd.read_csv(file_Cases, index_col = 0)
+
+   # Convert data frame to dictionary format
+   cases = make_Dict(df_cases)
+
+   # Calculate score
+   corr_coeff = get_pearson_cor(final_ranks, cases[0])
+
+   # Perform Head-Tails Breaks
+   htdict, thres = htbreak(final_ranks, 3)
+
+   htdict_replace = {2: 'Risiko Tinggi', 1:'Risiko Sedang', 0:'Risiko Rendah'}
+   for x, y in htdict.items():
+      htdict[x] = htdict_replace[y]
+
+   index_list = list(range(1, len(final_ranks) + 1))
+
+   if wilayah == 'east_java':
+      od_file = 'static/documents/source/Jawa Timur - OD_Matriks.csv'
+      spatial_file = 'static/spatial file/Jawa Timur/RBI250K_BATAS_WILAYAH_AR.shp'
+
+      pict = draw_spatial_graph_east_java(spatial_file, od_file, final_ranks, thres)
+
+   if wilayah == 'central_java':
+      od_file = 'static/documents/source/Jawa Tengah - OD_Matriks.csv'
+      spatial_file = 'static/spatial file/Jawa Tengah/RBI250K_BATAS_WILAYAH_AR.shp'
+
+      pict = draw_spatial_graph_central_java(spatial_file, od_file, final_ranks, thres)
+   
+   if wilayah == 'bali':
+      od_file = 'static/documents/source/Bali - OD_Matriks.csv.csv'
+      spatial_file = 'static/spatial file/Bali/RBI250K_BATAS_WILAYAH_AR.shp'
+
+      pict = draw_spatial_graph_bali(spatial_file, od_file, final_ranks, thres)
+   
+   context = {'document':document, 'final_ranks':final_ranks, 'corr_coeff':corr_coeff, 'htdict':htdict, 'thres':thres, 'index_list':index_list, 'pict':pict}
+   return render(request, "PageRank/result.html", context)
+
+# ------------------------------- Distance Decay PageRank -----------------------------
+
+# Write views' function for Distance Decay PageRank here.

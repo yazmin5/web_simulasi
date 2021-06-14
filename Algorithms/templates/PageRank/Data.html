@@ -10,21 +10,21 @@
         <div class="justify-content-between row">
             <div class="col-12 col-lg-12">
                 <div class="rehomes-comment-form mb-80 wow fadeInUp" data-wow-delay="200ms">
-                    <h4 class="mb-30">Halaman Hasil Prediksi Menggunakan Algoritme EpiRank</h4>
+                    <h4 class="mb-30">Hasil Perhitungan dan Simulasi Menggunakan Algoritme Modifikasi Graph PageRank</h4>
                     
                     <!-- Brief Introductions -->
                     <div class="col-12 col-lg-12 information-area mb-80 wow update">
                     <table class="table">
                         <tr>
-                            <th>Name</th>
-                            <th>Date Input</th>
-                            <th>Prediction Result</th>
+                            <th>Nama </th>
+                            <th>Tanggal</th>
+                            <th>Hasil Prediksi</th>
                         </tr>
                         {% for i in documents %}
                             <tr>
-                                <td>{{ i.name }}</td>
-                                <td> {{ i.date_input }} </td>
-                                <td> <p class=""><a style="color:black;" href="{% url 'resultEpiRank' i.id %}"> Result </a></p> </td>
+                                <td> {{ i.Nama }} </td>
+                                <td> {{ i.Tanggal }} </td>
+                                <td> <p class=""><a style="color:black;" href="{% url 'resultPageRank' i.id %}"> Hasil </a></p> </td>
                             </tr>
                         {% endfor %}
                     </table>
@@ -32,11 +32,7 @@
                     <!-- End of Brief Introductions -->
 
                 </div>
-            </div>
-
-            <div class="col-12 col-lg-4">
-                
-            </div>
+            </div>  
         </div>
     </div>
 </div>
