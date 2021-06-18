@@ -55,14 +55,16 @@
             </div>
             <div class="col-8 col-lg-8">
                 <h5>Visualisasi Graph</h5>
-                {% if pict1 %}
+                <!-- {% if pict1 %}
                     <h6>Visualisasi Graph Pergerakan Berangkat:</h6>
                     <img src="data:image/png;base64, {{ pict1 }} " alt="">
                 {% endif %}
                 {% if pict2 %}
                     <h6>Visualisasi Graph Pergerakan Pulang:</h6>
                     <img src="data:image/png;base64, {{ pict2 }} " alt="">
-                {% endif %}
+                {% endif %} -->
+                <h6>Visualisasi Graph Prediksi :</h6>
+                <img src="{% static '/img/core-img/visualisasi.png' %}" alt="">
             </div>
         </div>
     </div>
