@@ -10,7 +10,7 @@
         <div class="justify-content-between row">
             <div class="col-12 col-lg-12">
                 <div class="rehomes-comment-form mb-80 wow fadeInUp" data-wow-delay="200ms">
-                    <h4 class="mb-30">Halaman Hasil Prediksi Menggunakan Algoritme EpiRank</h4>
+                    <h4 class="mb-30">Halaman Hasil Prediksi Menggunakan Algoritme Distance Decay PageRank</h4>
                     
                     <!-- Table -->
                     <h5>Nama Prediksi : {{ document.name }}</h5>
@@ -58,16 +58,14 @@
 
             <div class="col-8 col-lg-8">
                 <h5>Visualisasi Graph</h5>
-                <!-- {% if pict1 %}
-                    <h6>Visualisasi Graph Pergerakan Berangkat:</h6>
+                {% if pict1 %}
+                    <h6>Visualisasi Graph Pergerakan Berangkat :</h6>
                     <img src="data:image/png;base64, {{ pict1 }} " alt="">
                 {% endif %}
                 {% if pict2 %}
                     <h6>Visualisasi Graph Pergerakan Pulang :</h6>
                     <img src="data:image/png;base64, {{ pict2 }} " alt="">
-                {% endif %} -->
-                <h6>Visualisasi Graph Prediksi :</h6>
-                <img src="{% static '/img/core-img/visualisasi.png' %}" alt="">
+                {% endif %}
             </div>
         </div>
     </div>
