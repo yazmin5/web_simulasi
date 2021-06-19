@@ -106,19 +106,21 @@ def run_ddpr(g, b=0.9, number_of_loops=1000, exfac=None) :
 
     for key, value in dictionary.items(): print("{} : ({})".format(key, value))
 
-    plt.rcdefaults()
-    fig, ax = plt.subplots()
+    #plt.rcdefaults()
+    #fig, ax = plt.subplots()
 
-    ax.barh(nama, skor, align='center')
-    ax.set_yticks(np.arange(len(nama)))
-    ax.set_yticklabels(nama)
-    ax.invert_yaxis()  # labels read top-to-bottom
-    ax.set_xlabel('Score')
-    ax.set_title('DDPR Score')
+    #ax.barh(nama, skor, align='center')
+    #ax.set_yticks(np.arange(len(nama)))
+    #ax.set_yticklabels(nama)
+    #ax.invert_yaxis()  # labels read top-to-bottom
+    #ax.set_xlabel('Score')
+    #ax.set_title('DDPR Score')
 
-    plt.show()
+    #plt.show()
 
     list1 = [ddprScore, b, nama, skor]
+
+    print('letsgow')
 
     return list1
 
