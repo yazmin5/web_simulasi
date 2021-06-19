@@ -1,10 +1,13 @@
+from Algorithms.DDPR import cre_DiGraph, makeDict, pearsonCorr, run_ddpr
 from django.shortcuts import render, redirect
 from django.template import loader 
 from .models import *
 from .forms import DocsForms
 from .forms import DocsFormsPageRank
+from .forms import DocsFormsDDPR
 from .Epirank import run_epiRank, make_DiGraph, get_exfac, htbreak, draw_graph
 from .PageRank import make_DiGraph, create_ODMatrix, run_Modified_PageRank, make_Dict, get_pearson_cor, htbreak, draw_spatial_graph_central_java, draw_spatial_graph_east_java, draw_spatial_graph_bali
+from .DDPR import cre_DiGraph, run_ddpr, makeDict, pearsonCorr, htbreak, draw_spatial_graph_east_java
 import pandas as pd
 
 def landingPage(request):
@@ -142,4 +145,51 @@ def resultPageRank(request, pk):
 
 # ------------------------------- Distance Decay PageRank -----------------------------
 
-# Write views' function for Distance Decay PageRank here.
+def DDPR(request):
+   form = DocsFormsDDPR()
+   if request.method == 'POST':
+      form = DocsFormsDDPR(request.POST, request.FILES, request.FILES)
+      if form.is_valid():
+         form.save()
+         return redirect('DocsDDPR')
+   
+   context = {'form':form}
+   return render(request, 'DDPR/Form.html', context)
+
+
+def DocsDDPR(request):
+   documents = DocumentsDDPR.objects.all()
+   documents = documents.order_by('-Tanggal')
+   context = {'documents':documents}
+   return render(request, "DDPR/Data.html", context)
+
+
+def resultDDPR(request, pk):
+   document = DocumentsDDPR.objects.get(id=pk)
+   file_Kasus = document.File_Kasus_Stasiun
+   file_Jarak = document.File_Jarak
+
+   #reading a file of COVID-19 cases and make it to dictionary
+   df_case = pd.read_csv(file_Kasus, index_col = 0)
+   case = makeDict(df_case)
+
+   #reading OD matrix and making graph from it
+   Matrix = pd.read_csv(file_Jarak)
+   graph = cre_DiGraph(Matrix)
+
+   #running the DDPR
+   score = run_ddpr(graph)
+
+   #calculating the correlation coeff of score and cases
+   corr = pearsonCorr(score[0],case)
+
+   # Perform Head-Tails Breaks
+   risk, thres = htbreak(case, 3)
+
+   risk_replace = {2: 'Risiko Tinggi', 1:'Risiko Sedang', 0:'Risiko Rendah'}
+   for x, y in risk.items():
+      risk[x] = risk_replace[y]
+
+
+   context = {'document':document, 'score':score, 'risk':risk, 'corr':corr}
+   return render(request, "DDPR/result.html", context)

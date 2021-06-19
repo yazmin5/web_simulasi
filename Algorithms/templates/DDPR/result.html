@@ -18,10 +18,10 @@
                         <br>
                         <table class="table">
                             <tr>
-                                <th>Kota</th>
-                                <th>Nilai EpiRank</th>
+                                <th>Stasiun</th>
+                                <th>Skor DDPR</th>
                             </tr>
-                            {% for i,j in epi_vals.items %}
+                            {% for i,j in score.items %}
                                 <tr>
                                     <td>{{ i }}</td>
                                     <td> {{j}} </td>
@@ -35,7 +35,7 @@
                             <tr>
                                 <th>Prediksi Status </th>
                             </tr>
-                            {% for i,j in gb1.items %}
+                            {% for i,j in risk.items %}
                                 <tr>
                                     <td>{{j}}</td>
                                 </tr>
@@ -43,31 +43,15 @@
                         </table>
                     </div>
                     <!-- End of Table -->
-
+                   
                 </div>
-                <br>
-                <div class="col-12 col-lg-8">
-                    <p><b> Prediksi Status terbagi pada 3 level:  </b> 
-                        <br>
-                     Prediksi Status 2 = Risiko <b>Tinggi</b> ,
-                     Prediksi Status 1 = Risiko <b>Sedang</b> ,
-                     Prediksi Status 0 = Risiko <b>Rendah</b> </p>
-                </div>
-                <br>
             </div>
 
-            <div class="col-8 col-lg-8">
-                <h5>Visualisasi Graph</h5>
-                {% if pict1 %}
-                    <h6>Visualisasi Graph Pergerakan Berangkat :</h6>
-                    <img src="data:image/png;base64, {{ pict1 }} " alt="">
-                {% endif %}
-                {% if pict2 %}
-                    <h6>Visualisasi Graph Pergerakan Pulang :</h6>
-                    <img src="data:image/png;base64, {{ pict2 }} " alt="">
-                {% endif %}
+            <div class="col-12 col-lg-8">
+                <h5> Nilai Koefisien Korelasi : {{ corr }} </h5> 
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
