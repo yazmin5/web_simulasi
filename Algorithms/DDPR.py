@@ -1,3 +1,4 @@
+from geopandas.io.file import read_file
 import networkx as nx             # graph
 import matplotlib.pyplot as plt   # plot
 import numpy as np                # calculation
@@ -21,11 +22,6 @@ def cre_DiGraph(df, origin_col='origin', destination_col='destination',
     g = nx.DiGraph()
     for o,d,f in zip(origins, destinations, distances):
         g.add_edge(o, d, weight=float(f))
-
-    pos = nx.spring_layout(g)
-    # Save graph as picture
-    nx.draw(g, with_labels = True, pos = pos)
-    plt.savefig("Graph.png")
 
     print('Graph Construction Succeed,'+' No. Nodes : '+str( g.number_of_nodes()) +', No. Edges : '+str(g.number_of_edges()))
     print(g.nodes())
@@ -106,21 +102,7 @@ def run_ddpr(g, b=0.9, number_of_loops=1000, exfac=None) :
 
     for key, value in dictionary.items(): print("{} : ({})".format(key, value))
 
-    #plt.rcdefaults()
-    #fig, ax = plt.subplots()
-
-    #ax.barh(nama, skor, align='center')
-    #ax.set_yticks(np.arange(len(nama)))
-    #ax.set_yticklabels(nama)
-    #ax.invert_yaxis()  # labels read top-to-bottom
-    #ax.set_xlabel('Score')
-    #ax.set_title('DDPR Score')
-
-    #plt.show()
-
-    list1 = [ddprScore, b, nama, skor]
-
-    print('letsgow')
+    list1 = [dictionary, b, nama, skor]
 
     return list1
 
@@ -198,102 +180,51 @@ def get_graph():
 
 
 #visualisasi graf wilayah jatim
-def draw_spatial_graph_east_java(spatial_file, od_file, final_ranks, thres):
+def draw_spatial_graph_east_java(spatial_file, od_file, final_ranks, thres, coordinate):
     # Read shp file
     gdf = gpd.read_file(spatial_file)
-
-    # Create copy of geo-dataframe
-    gdf_points = gdf.copy()
-
-    # Get centroids coordinates of each region
-    gdf_points['geometry'] = gdf_points['geometry'].centroid
+    gdf_point = gpd.read_file(coordinate)
 
     # Create new colums for longitude and latitude coordinates
-    gdf_points['Long'] = gdf_points.geometry.x
-    gdf_points['Lat'] = gdf_points.geometry.y
+    gdf_point['Long'] = gdf_point.geometry.x
+    gdf_point['Lat'] = gdf_point.geometry.y
 
-    final_ranks = pd.DataFrame(final_ranks.items(), columns = ['WADMKK', 'PageRank'])
+    final_ranks = pd.DataFrame(final_ranks.items(), columns = ['Nama', 'Skor'])
 
     print(final_ranks)
 
-    final_ranks['WADMKK'] = final_ranks['WADMKK'].astype(str)
-    gdf_points['WADMKK'] = gdf_points['WADMKK'].astype(str)
+    final_ranks['Nama'] = final_ranks['Nama'].astype(str)
+    gdf_point['Nama'] = gdf_point['Nama'].astype(str)
     
-    gdf_points_merge = pd.merge(gdf_points, final_ranks, on='WADMKK') 
-    gdf_points_merge['PageRank Label'] = gdf_points_merge['PageRank'].round(3)
+    gdf_points_merge = pd.merge(gdf_point, final_ranks, on='Nama') 
+    gdf_points_merge['Label'] = gdf_points_merge['Skor'].round(3)
 
-    gdf_points_merge['PageRank Label'] = gdf_points_merge['PageRank Label'].astype(str)
+    gdf_points_merge['Label'] = gdf_points_merge['Label'].astype(str)
 
-    gdf_points_merge['Node Label'] = gdf_points_merge['WADMKK'] + ' ' + '(' +gdf_points_merge['PageRank Label'] + ')'
+    gdf_points_merge['Node Label'] = gdf_points_merge['Nama'] + ' ' + '(' +gdf_points_merge['Label'] + ')'
 
-    label_list = dict(zip(gdf_points_merge['WADMKK'], gdf_points_merge['Node Label']))
+    label_list = dict(zip(gdf_points_merge['Nama'], gdf_points_merge['Node Label']))
     
     print(gdf_points_merge)
-
-    # Manual adjustment to handle too close node which affecting overlapping label between nodes
-    
-    # Adjust coordinate for Sidoarjo
-    gdf_points_merge.at[1, 'Lat'] = -7.408046
-
-    # Adjust coordinate for Kediri
-    gdf_points_merge.at[3, 'Lat'] = -7.928923
-    gdf_points_merge.at[3, 'Long'] = 112.289499
-
-    # Adjust coordinate for Lamongan
-    gdf_points_merge.at[8, 'Lat'] = -7.031358
-
-    # Adjust coordinate for Mojokerto
-    gdf_points_merge.at[20, 'Lat'] = -7.599680
-
-    # Adjust coordinate for Kota Blitar
-    gdf_points_merge.at[22, 'Lat'] = -8.005235
-
-    # Adjust coordinate for Blitar
-    gdf_points_merge.at[23, 'Lat'] = -8.229889
-
-    # Adjust coordinate for Kota Mojokerto
-    gdf_points_merge.at[24, 'Long'] = 112.337465
-
-    # Adjust coordinate for Pamekasan
-    gdf_points_merge.at[26, 'Lat'] = -7.165152
-
-    # Adjust coordinate for Kota Batu
-    gdf_points_merge.at[27, 'Long'] = 112.522421
-
-    # Adjust coordinate for Madiun
-    gdf_points_merge.at[29, 'Lat'] = -7.524302
-
-    # Adjust coordinate for Magetan
-    gdf_points_merge.at[30, 'Lat'] = -7.763557
-    gdf_points_merge.at[30, 'Long'] = 111.257838
-
-    # Adjust coordinate for Bangkalan
-    gdf_points_merge.at[31, 'Lat'] = -6.944295
-
-    # Adjust coordinate for Kota Probolinggo
-    gdf_points_merge.at[32, 'Long'] = 113.335521
-
-    # Adjust coordinate for Kota Madiun
-    gdf_points_merge.at[37, 'Long'] = 111.429918
 
     # Create graph object
     G = nx.Graph()
 
     # Iterate to add node in WADMKK column based on coordinates on Long and Lat columns
-    for node, posx, posy in zip(gdf_points_merge['WADMKK'], gdf_points_merge['Long'], gdf_points_merge['Lat']):
+    for node, posx, posy in zip(gdf_points_merge['Nama'], gdf_points_merge['Long'], gdf_points_merge['Lat']):
         G.add_node(node, pos=(posx, posy)) # Adding node to graph
 
     # Read csv file
-    df_graph = pd.read_csv(od_file, error_bad_lines = False)
+    df_graph = pd.read_csv(od_file)
 
     # Iterate to add edge between node in Origin column and node in Destination column
-    for o, d in zip(df_graph['Origin'].tolist(), df_graph['Destination'].tolist()):
+    for o, d in zip(df_graph['origin'].tolist(), df_graph['destination'].tolist()):
         G.add_edge(o, d) # Adding edge to graph
 
     # Create a list of color to adjust color for nodes in graph based on threshold produced by Head-Tails Breaks classification
     color_map = []
 
-    for node, score in zip(gdf_points_merge['WADMKK'], gdf_points_merge['PageRank']):
+    for node, score in zip(gdf_points_merge['Nama'], gdf_points_merge['Skor']):
         if score > thres[1]:
             color_map.append('red') # Color for category 2 (High Risk of Covis-19 Spreading)
         if score > thres[0] and score < thres[1]:
@@ -306,7 +237,7 @@ def draw_spatial_graph_east_java(spatial_file, od_file, final_ranks, thres):
     gdf.plot(figsize=(100,60))
 
     # Plot the graph
-    nx.draw(G, nx.get_node_attributes(G, 'pos'), node_size = gdf_points_merge['PageRank']*100000,
+    nx.draw(G, nx.get_node_attributes(G, 'pos'), node_size = gdf_points_merge['Skor']*100000,
             width = 1.0, node_color=color_map, alpha = 0.8)
     nx.draw_networkx_labels(G, nx.get_node_attributes(G, 'pos'), labels = label_list
                             , font_size = 60, font_color = 'k')

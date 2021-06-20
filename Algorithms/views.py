@@ -1,4 +1,3 @@
-from Algorithms.DDPR import cre_DiGraph, makeDict, pearsonCorr, run_ddpr
 from django.shortcuts import render, redirect
 from django.template import loader 
 from .models import *
@@ -173,12 +172,16 @@ def resultDDPR(request, pk):
    df_case = pd.read_csv(file_Kasus, index_col = 0)
    case = makeDict(df_case)
 
+   #print(case)
+
    #reading OD matrix and making graph from it
    Matrix = pd.read_csv(file_Jarak)
    graph = cre_DiGraph(Matrix)
 
    #running the DDPR
    score = run_ddpr(graph)
+
+   skor = score[0]
 
    #calculating the correlation coeff of score and cases
    corr = pearsonCorr(score[0],case)
@@ -190,6 +193,13 @@ def resultDDPR(request, pk):
    for x, y in risk.items():
       risk[x] = risk_replace[y]
 
+   index = list(range(1, len(skor) + 1))
 
-   context = {'document':document, 'score':score, 'risk':risk, 'corr':corr}
+   od = 'static/documents/OD Matrix 83,25 KM.csv'
+   spatial_file = 'static/spatial file/Jawa Timur/RBI250K_BATAS_WILAYAH_AR.shp'
+   coordinate = 'static/spatial file/Jawa Timur/titik kereta.shp'
+
+   gambar = draw_spatial_graph_east_java(spatial_file, od, skor, thres, coordinate)
+
+   context = {'document':document, 'score':score, 'risk':risk, 'corr':corr, 'index':index, 'skor':skor, 'gambar':gambar}
    return render(request, "DDPR/result.html", context)
