@@ -67,7 +67,11 @@
                     <img src="data:image/png;base64, {{ pict2 }} " alt="">
                 {% endif %} -->
                 <h6>Visualisasi Graph Prediksi :</h6>
-                <img src="{% static '/img/core-img/visualisasi.png' %}" alt="">
+                <!-- <img src="{% static '/img/core-img/visualisasi.png' %}" alt=""> -->
+                {% if pict1 %}
+                    <!-- <h6>Visualisasi Graph Pergerakan Berangkat:</h6> -->
+                    <img src="data:image/png;base64, {{ pict1 }} " alt="">
+                {% endif %}
             </div>
         </div>
     </div>
