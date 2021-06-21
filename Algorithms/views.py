@@ -39,10 +39,12 @@ def resultEpiRank(request, pk):
    epi_vals = run_epiRank(depart, come_back)
    gb1,bb = htbreak(epi_vals, 3)
 
-   pict1 = draw_graph(depart)
-   pict2 = draw_graph(come_back)
+   spatial_file = 'static/spatial file/Jabodetabek/BATASWILAYAH_JABODETABEK_250K.shp'
+   od_file = depart_file
+   pict1 = draw_graph(spatial_file, od_file)
+   # pict2 = draw_graph(come_back)
    
-   context = {'document':document, 'epi_vals':epi_vals, 'gb1':gb1, 'pict1':pict1, 'pict2':pict2}
+   context = {'document':document, 'epi_vals':epi_vals, 'gb1':gb1, 'pict1':pict1}
    return render(request, "EpiRank/result.html", context)
 
 # ------------------------------- PageRank -----------------------------

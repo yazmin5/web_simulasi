@@ -7,6 +7,8 @@ matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
 import base64
 from io import BytesIO
+import geopandas as gpd
+from scipy.stats import pearsonr
 
 def make_DiGraph(df, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=True, exclude_selfloop=True):
     origins = df[origin_col].tolist()
@@ -204,12 +206,70 @@ def get_graph():
     buffer.close()
     return graph
 
-def draw_graph(g):
-    g = make_DiGraph(g, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=False, exclude_selfloop=False)
-    # nx.draw(graph_image, with_labels = True)
-    plt.figure(figsize=(13, 8))
-    nx.draw(g, with_labels = True)
+def draw_graph(spatial_file, od_file):
+    # g = make_DiGraph(g, origin_col='origin', destination_col='destination', flow_col='flow', largest_connected_component=False, exclude_selfloop=False)
+    # # nx.draw(graph_image, with_labels = True)
+    # plt.figure(figsize=(13, 8))
+    # nx.draw(g, with_labels = True)
+    # plt.draw()
+    # graph = get_graph()
+
+    # Read shp file
+    gdf = gpd.read_file(spatial_file)
+
+    # Create copy of geo-dataframe
+    gdf_points = gdf.copy()
+
+    # Get centroids coordinates of each region
+    gdf_points['geometry'] = gdf_points['geometry'].centroid
+
+    # Create new colums for longitude and latitude coordinates
+    gdf_points['Long'] = gdf_points.geometry.x
+    gdf_points['Lat'] = gdf_points.geometry.y
+
+    # Create graph object
+    G = nx.Graph()
+
+    # Iterate to add node in WADMKK column based on coordinates on Long and Lat columns
+    for node, posx, posy in zip(gdf_points['WADMKD'], gdf_points['Long'], gdf_points['Lat']):
+        G.add_node(node, pos=(posx, posy)) # Adding node to graph
+
+    # Read csv file
+    df_graph_berangkat = pd.read_csv(od_file)
+
+    # Iterate to add edge between node in Origin column and node in Destination column
+    for o, d in zip(df_graph_berangkat['Origin'].tolist(), df_graph_berangkat['Destination'].tolist()):
+        G.add_edge(o, d)  # Adding edge to graph
+
+    # Create a list of color to adjust color for nodes in graph based on threshold produced by Head-Tails Breaks classification
+    color_map = []
+
+    for node, score in zip(gdf['WADMKD'], gdf['EpiVals']):
+        if score > 0.4:
+            color_map.append('red') # Color for category 2 (High Risk of Covis-19 Spreading)
+        if score > 0.08 and score < 0.4:
+            color_map.append('orange') # Color for category 1 (Moderate Risk of Covis-19 Spreading)
+        if score < 0.08:
+            color_map.append('yellow') # Color for category 0 (Low Risk of Covis-19 Spreading)
+
+    # Plot the graph
+    temp = 1000
+    nx.draw(G, nx.get_node_attributes(G, 'pos'), node_size = (gdf_points['EpiVals'])*20000, width = 0.5, node_color=color_map, alpha = 0.8)
+    nx.draw_networkx_labels(G, nx.get_node_attributes(G, 'pos'), labels = label_list, font_size = 8, font_color = 'b')
+
+    # Plot the base map and set figure size
+    gdf.plot(figsize=(21,8))
+
+    # Plot the graph
+    nx.draw(G, nx.get_node_attributes(G, 'pos'), node_size = (gdf_points['EpiVals'])*2000,
+            width = 0.5, node_color=color_map, alpha = 0.8)
+    nx.draw_networkx_labels(G, nx.get_node_attributes(G, 'pos'), labels = label_list
+                            , font_size = 8, font_color = 'k')
+
+    plt.tight_layout()
     plt.draw()
+
     graph = get_graph()
+
     return graph
 
