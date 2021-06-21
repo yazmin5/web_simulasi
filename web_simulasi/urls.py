@@ -31,7 +31,11 @@ urlpatterns = [
 
     path('PageRank', views.PageRank, name="PageRank"),
     path('DocsPageRank', views.DocsPageRank, name="DocsPageRank" ),
-    path('resultPageRank/<str:pk>/', views.resultPageRank, name="resultPageRank")
+    path('resultPageRank/<str:pk>/', views.resultPageRank, name="resultPageRank"),
+
+    path('DDPR', views.DDPR, name="DDPR"),
+    path('DocsDDPR', views.DocsDDPR, name="DocsDDPR" ),
+    path('resultDDPR/<str:pk>/', views.resultDDPR, name="resultDDPR")
 ]
 
 if settings.DEBUG:

@@ -44,4 +44,16 @@ class DocumentsPageRank(models.Model):
 
 # ------------------------------- Distance Decay PageRank -----------------------------
 
-# Write models' class for Distance Decay PageRank here.
+# Get current date
+date = datetime.now()
+
+file_path = "uploads/{}/{}/{}/".format(date.year, date.month, date.day)
+
+class DocumentsDDPR(models.Model): 
+    Nama = models.CharField(max_length=100, null=True, verbose_name='Nama ')
+    Tanggal = models.DateTimeField(default=datetime.now(), null=True, verbose_name='Tanggal ')
+    File_Jarak = models.FileField(null=True, verbose_name='File OD Matrix Beserta Jarak Antar Stasiun ', upload_to=file_path)
+    File_Kasus_Stasiun = models.FileField(null=True, verbose_name='File Jumlah Kasus Terkonfirmasi Covid-19 Per Stasiun ', upload_to=file_path)
+    
+    def __str__(self):
+        return self.name

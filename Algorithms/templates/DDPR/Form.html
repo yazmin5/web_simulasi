@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<br>
+<div class="rehomes-properties-area">
+    <div class="container">
+        <div class="justify-content-between row">
+            <div class="col-12 col-lg-12">
+                <div class="rehomes-comment-form mb-80 wow fadeInUp" data-wow-delay="200ms">
+                    <h4 class="mb-30">Pemodelan Pergerakan Manusia Pada Kereta Api Terhadap COVID-19 Menggunakan Algoritme Distance Decay PageRank</h4>
+                    
+                    <!-- Brief Introductions -->
+                    <div class="col-12 col-lg-12 information-area mb-80 wow update">
+                        <p style="text-align: justify;">
+                            Distance-Decay PageRank dikembangkan oleh Chin dan Wen (2015) dengan menambahkan parameter jarak geografis 
+                            pada algoritme PageRank. Parameter jarak akan menentukan bobot yang digunakan sebagai pertimbangan pada perhitungan 
+                            skor PageRank. Efek distance-decay berasal dari hukum pertama geografi Tobler, 
+                            “Semua hal itu terhubung, tetapi semakin dekat jaraknya, semakin dekat juga hubungannya” (Yin et al. 2019). 
+                            Dalam jaringan geospasial, Chin dan wen (2015) menggunakan jarak geografis antar node sebagai 
+                            sebuah bobot perjalanan yang dilakukan oleh manusia. Bobot ini dapat dijadikan faktor eksternal 
+                            maupun internal dari sebuah node. Untuk menangkap efek Distance-Decay, Chin dan wen (2015) 
+                            menggunakan nilai invers dari jarak node yang dituju ke node awal sebagai parameter pertimbangan 
+                            pada perhitungan skor PR, kemudian skor akan dikirimkan dari node awal ke node yang dituju.
+                        </p>
+
+                        <p style="text-align: justify;">
+                            Formula dari Distance-Decay PageRank dapat dilihat pada Persamaan (1) dan (2) (Chin dan Wen 2020). 
+                            Untuk setiap node a, yang mempunyai link dari node b (b∈Ia) dan untuk setiap node b, yang mempunyai 
+                            link yang menuju ke node c (c∈Ob, dan a∈Ob). 
+                        </p>
+
+                        <p>
+                            <img src="{% static '/img/core-img/rumus DDPR.png' %}" alt="Rumus Algoritma DDPR" style="width: 600px;" >
+                        </p>
+
+                        <p style="text-align: justify;">
+                            DDPRt(a) adalah nilai skor PR dari node a pada iterasi t. Nilai skor inilah yang nantinya akan digunakan 
+                            pada saat pemberian peringkat pada node. β merupakan <i>Distance factor</i> dan distance adalah jarak antara 
+                            node i dan node j. Faktor jarak pada persamaan (2) merepresentasikan skala dari efek distance-decay. 
+                            Semakin besar faktor jarak, efek distance-decay akan lebih signifikan. Pada saat faktor jarak bernilai 0, 
+                            hasil dari perhitungan akan sama dengan algoritme awal, algoritme PageRank. 
+                        </p>
+
+                        <p style="text-align: justify;">
+                            <b>Pada pemodelan ini, Algoritme Distance-decay Pagerank digunakan untuk memodelkan pergerakan manusia 
+                                pada transportasi kereta api di Provinsi Jawa Timur. Pada perhitungannya, variabel yang paling mempengaruhi
+                                adalah jarak antar stasiun dan jumlah stasiun yang terhubung. Contah data input dapat dilihat pada gambar dibawah ini:</b> 
+                        </p>
+
+                        <p>
+                            <img src="{% static '/img/core-img/contoh OD Matrix.png' %}" alt="File Matriks" style="height: 300px;" >
+                            <img src="{% static '/img/core-img/contoh graf.png' %}" alt="File Graf" style="height: 350px;" >
+                        </p>
+
+                        
+                    </div>
+                    <!-- End of Brief Introductions -->
+
+                    <!-- Form -->
+                    <div class="col-12 col-lg-12 information-area mb-80 wow update" style="background-color: lightgray; padding: 50px;">
+                        <h4 class="mb-30">Form Input</h4>
+                        <table class="col-12 col-lg-12" style="color: black;">
+                            <form class="#" method="POST" enctype="multipart/form-data" style="color: black;">
+                                {% csrf_token %}
+                                {{ form.as_table }}
+                        </table>
+                        <input type="submit" name="submit" class="btn rehomes-btn mt-15" style="background-color:#cc2900;color:white;" href="">
+                    </div>
+                    <!-- End of Form -->
+
+                    <div class="contact-btn mt-3 mt-lg-0 ml-3 ml-lg-5">
+                        <a class="btn rehomes-btn mt-15" style="background-color:#cc2900;color:white;" href="DocsDDPR">Data yang sudah diinput</a>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
