@@ -3,10 +3,10 @@ import networkx as nx             # graph
 import matplotlib.pyplot as plt   # plot
 import numpy as np                # calculation
 import pandas as pd
-import copy as copy
+import copy
 import geopandas as gpd
 import matplotlib
-matplotlib.use("TkAgg")
+matplotlib.use("agg")
 import base64
 from io import BytesIO
 from scipy.stats import pearsonr
@@ -102,13 +102,13 @@ def run_ddpr(g, b=0.9, number_of_loops=1000, exfac=None) :
 
     for key, value in dictionary.items(): print("{} : ({})".format(key, value))
 
-    list1 = [dictionary, b, nama, skor]
+    list1 = [ddprScore, b, nama, skor]
 
     return list1
 
 
 # Function for making a dictionary
-def makeDict(dfCases, origin_col='node', destination_col='cases'):
+def makeDict(dfCases, origin_col, destination_col):
    nodes = dfCases[origin_col].tolist()
    cases = dfCases[destination_col].tolist()
    result = dict(zip(nodes, cases))
@@ -180,7 +180,7 @@ def get_graph():
 
 
 #visualisasi graf wilayah jatim
-def draw_spatial_graph_east_java(spatial_file, od_file, final_ranks, thres, coordinate):
+def draw_spatial_graph(spatial_file, od_file, final_ranks, thres, coordinate, case ):
     # Read shp file
     gdf = gpd.read_file(spatial_file)
     gdf_point = gpd.read_file(coordinate)
@@ -197,6 +197,11 @@ def draw_spatial_graph_east_java(spatial_file, od_file, final_ranks, thres, coor
     gdf_point['Nama'] = gdf_point['Nama'].astype(str)
     
     gdf_points_merge = pd.merge(gdf_point, final_ranks, on='Nama') 
+    gdf_points_merge = pd.merge(gdf_points_merge, case, on='Nama')
+    gdf_points_merge = gdf_points_merge.sort_values(by=['cases'], ascending= False)
+
+    #print(gdf_points_merge)
+
     gdf_points_merge['Label'] = gdf_points_merge['Skor'].round(3)
 
     gdf_points_merge['Label'] = gdf_points_merge['Label'].astype(str)
@@ -204,8 +209,10 @@ def draw_spatial_graph_east_java(spatial_file, od_file, final_ranks, thres, coor
     gdf_points_merge['Node Label'] = gdf_points_merge['Nama'] + ' ' + '(' +gdf_points_merge['Label'] + ')'
 
     label_list = dict(zip(gdf_points_merge['Nama'], gdf_points_merge['Node Label']))
-    
+
+
     print(gdf_points_merge)
+
 
     # Create graph object
     G = nx.Graph()
@@ -224,12 +231,12 @@ def draw_spatial_graph_east_java(spatial_file, od_file, final_ranks, thres, coor
     # Create a list of color to adjust color for nodes in graph based on threshold produced by Head-Tails Breaks classification
     color_map = []
 
-    for node, score in zip(gdf_points_merge['Nama'], gdf_points_merge['Skor']):
-        if score > thres[1]:
+    for node, cases in zip(gdf_points_merge['Nama'], gdf_points_merge['cases']):
+        if cases > thres[1]:
             color_map.append('red') # Color for category 2 (High Risk of Covis-19 Spreading)
-        if score > thres[0] and score < thres[1]:
+        if cases > thres[0] and cases < thres[1]:
             color_map.append('orange') # Color for category 1 (Moderate Risk of Covis-19 Spreading)
-        if score < thres[0]:
+        if cases < thres[0]:
             color_map.append('yellow') # Color for category 0 (Low Risk of Covis-19 Spreading)
 
     # Plot the base map and set figure size
@@ -237,7 +244,7 @@ def draw_spatial_graph_east_java(spatial_file, od_file, final_ranks, thres, coor
     gdf.plot(figsize=(100,60))
 
     # Plot the graph
-    nx.draw(G, nx.get_node_attributes(G, 'pos'), node_size = gdf_points_merge['Skor']*100000,
+    nx.draw(G, nx.get_node_attributes(G, 'pos'), node_size = gdf_points_merge['Skor']*1000000,
             width = 1.0, node_color=color_map, alpha = 0.8)
     nx.draw_networkx_labels(G, nx.get_node_attributes(G, 'pos'), labels = label_list
                             , font_size = 60, font_color = 'k')
@@ -246,5 +253,6 @@ def draw_spatial_graph_east_java(spatial_file, od_file, final_ranks, thres, coor
     plt.draw()
 
     graph = get_graph()
+
     
     return graph

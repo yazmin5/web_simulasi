@@ -6,7 +6,7 @@ from .forms import DocsFormsPageRank
 from .forms import DocsFormsDDPR
 from .Epirank import run_epiRank, make_DiGraph, get_exfac, htbreak, draw_graph
 from .PageRank import make_DiGraph, create_ODMatrix, run_Modified_PageRank, make_Dict, get_pearson_cor, htbreak, draw_spatial_graph_central_java, draw_spatial_graph_east_java, draw_spatial_graph_bali
-from .DDPR import cre_DiGraph, run_ddpr, makeDict, pearsonCorr, htbreak, draw_spatial_graph_east_java
+from .DDPR import cre_DiGraph, draw_spatial_graph, run_ddpr, makeDict, pearsonCorr, htbreak, draw_spatial_graph
 import pandas as pd
 
 def landingPage(request):
@@ -172,7 +172,7 @@ def resultDDPR(request, pk):
 
    #reading a file of COVID-19 cases and make it to dictionary
    df_case = pd.read_csv(file_Kasus, index_col = 0)
-   case = makeDict(df_case)
+   case = makeDict(df_case, 'Nama', 'cases')
 
    #print(case)
 
@@ -189,11 +189,11 @@ def resultDDPR(request, pk):
    corr = pearsonCorr(score[0],case)
 
    # Perform Head-Tails Breaks
-   risk, thres = htbreak(case, 3)
+   risk1, thres1 = htbreak(case, 3)
 
    risk_replace = {2: 'Risiko Tinggi', 1:'Risiko Sedang', 0:'Risiko Rendah'}
-   for x, y in risk.items():
-      risk[x] = risk_replace[y]
+   for x, y in risk1.items():
+      risk1[x] = risk_replace[y]
 
    index = list(range(1, len(skor) + 1))
 
@@ -201,7 +201,19 @@ def resultDDPR(request, pk):
    spatial_file = 'static/spatial file/Jawa Timur/RBI250K_BATAS_WILAYAH_AR.shp'
    coordinate = 'static/spatial file/Jawa Timur/titik kereta.shp'
 
-   gambar = draw_spatial_graph_east_java(spatial_file, od, skor, thres, coordinate)
+   gambar = draw_spatial_graph(spatial_file, od, skor, thres1, coordinate, df_case)
 
-   context = {'document':document, 'score':score, 'risk':risk, 'corr':corr, 'index':index, 'skor':skor, 'gambar':gambar}
+   df_score = pd.DataFrame(skor.items(), columns = ['Nama', 'Skor'])
+   df_risk = pd.DataFrame(risk1.items(), columns = ['Nama', 'label'])
+
+   df_merge = pd.merge(df_score, df_risk, on='Nama')
+   df_merge= df_merge.sort_values(by=['Skor'], ascending= False)
+
+   dict_score = makeDict(df_merge, 'Nama', 'Skor')
+   dict_risk = makeDict(df_merge, 'Nama', 'label')
+
+
+   #print(dict_risk)
+   
+   context = {'document':document, 'score':score, 'risk':risk1, 'corr':corr, 'index':index, 'dict_score':dict_score, 'dict_risk':dict_risk, 'skor':skor, 'gambar':gambar}
    return render(request, "DDPR/result.html", context)
