@@ -187,6 +187,7 @@ def resultDDPR(request, pk):
 
    #calculating the correlation coeff of score and cases
    corr = pearsonCorr(score[0],case)
+   corr = round(corr, 3)
 
    # Perform Head-Tails Breaks
    risk1, thres1 = htbreak(case, 3)
@@ -207,6 +208,7 @@ def resultDDPR(request, pk):
    df_risk = pd.DataFrame(risk1.items(), columns = ['Nama', 'label'])
 
    df_merge = pd.merge(df_score, df_risk, on='Nama')
+   df_merge['Skor'] = df_merge['Skor'].round(3)
    df_merge= df_merge.sort_values(by=['Skor'], ascending= False)
 
    dict_score = makeDict(df_merge, 'Nama', 'Skor')

@@ -61,11 +61,12 @@
             </div>
 
             <div class="col-12 col-lg-8">
-                <h5> Nilai Koefisien Korelasi : {{ corr }} </h5> 
+                <h5> Nilai Koefisien Korelasi Terhadap COVID-19 : {{ corr }} </h5> 
             </div>
-            
+        </br>
+        </br>  
             <div class="col-12 col-lg-12">
-                <h4>Visualisasi Graf</h4>
+                <h3 style="text-align:center;"> Visualisasi Graf</h3>
                 {% if gambar %}
                     <img src="data:image/png;base64, {{ gambar }} " alt="">
                 {% endif %}
