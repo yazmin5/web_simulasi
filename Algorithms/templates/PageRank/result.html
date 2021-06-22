@@ -10,10 +10,10 @@
         <div class="justify-content-between row">
             <div class="col-12 col-lg-12">
                 <div class="rehomes-comment-form mb-80 wow fadeInUp" data-wow-delay="200ms">
-                    <h4 class="mb-30">Hasil Perhitungan dan Simulasi Menggunakan Algoritme Modifikasi Graph PageRank</h4>
+                    <h4 class="mb-30">Hasil Perhitungan dan Simulasi Modifikasi Graph PageRank</h4>
                     
                     <!-- Table -->
-                    <h5>Nama Prediksi : {{ document.Nama }}</h5>
+                    <h5>Wilayah : {{ document.Wilayah }}</h5>
                     <div style="float: left;">
                         <br>
                         <table class="table">
@@ -65,11 +65,39 @@
             </div>
 
             <div class="col-12 col-lg-12">
-                <h4>Visualisasi Graf</h4>
+                <h3>Visualisasi Graf</h3>
                 {% if pict %}
                     <img src="data:image/png;base64, {{ pict }} " alt="">
                 {% endif %}
             </div>
+
+            <div class="col-12 col-lg-12">
+                <h3> Keterangan Warna Wilayah : </h3> 
+            </div>
+
+            <div class="row row-no-gutters" style="text-align:center">
+                <div class="col-12 col-lg-12">
+                    <br>
+                    <!-- <h4 style="background-color:crimson;">Nilai PageRank > 2.498</h4> -->
+                    <h4 style="background-color:crimson;"> Status Risiko Tinggi </h4> 
+                    Nilai PageRank > {{ thres_upper }}
+                </div>
+
+                <div class="col-12 col-lg-12">
+                    <br>
+                    <!-- <h4 style="background-color:darkorange;">Nilai PageRank > 0.668 dan < 2.498</h4> -->
+                    <h4 style="background-color:darkorange;"> Status Risiko Sedang </h4>
+                    Nilai PageRank > {{ thres_lower }} & Nilai PageRank < {{ thres_upper }}
+                </div>
+
+                <div class="col-12 col-lg-12">
+                    <br>
+                    <!-- <h4 style="background-color:yellow;">Nilai PageRank < 0.668</h4> -->
+                    <h4 style="background-color:yellow;"> Status Risiko Rendah </h4>
+                    Nilai PageRank < {{ thres_lower }}
+                </div>
+            </div>
+            
 
         </div>
     </div>

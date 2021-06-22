@@ -8,6 +8,7 @@ from .Epirank import run_epiRank, make_DiGraph, get_exfac, htbreak, draw_graph
 from .PageRank import make_DiGraph, create_ODMatrix, run_Modified_PageRank, make_Dict, get_pearson_cor, htbreak, draw_spatial_graph_central_java, draw_spatial_graph_east_java, draw_spatial_graph_bali
 from .DDPR import cre_DiGraph, draw_spatial_graph, run_ddpr, makeDict, pearsonCorr, htbreak, draw_spatial_graph
 import pandas as pd
+import numpy as np
 
 def landingPage(request):
    return render(request, 'landingPage.html')
@@ -70,14 +71,18 @@ def DocsPageRank(request):
 def resultPageRank(request, pk):
    document = DocumentsPageRank.objects.get(id=pk)
    wilayah = document.Wilayah
-   file_GDP = document.File_GDP
-   file_MAN = document.File_MAN
-   file_UNEM= document.File_UNEM
-   file_CRIM = document.File_CRIM
-   file_DENS = document.File_DENS
-   file_LIT = document.File_LIT
-   file_INF = document.File_INF
-   file_MIN = document.File_MIN
+   file_Matriks_OD = document.File_Matriks_OD
+
+   # Read the file which consists of a list of edges representing regions in East Java Province
+   file_GDP = pd.read_excel(file_Matriks_OD, index_col=0, usecols=['ID', 'GDP Origin', 'GDP Destination'])
+   file_MAN = pd.read_excel(file_Matriks_OD, index_col=0, usecols=['ID', 'MAN Origin', 'MAN Destination'])
+   file_UNEM = pd.read_excel(file_Matriks_OD, index_col=0, usecols=['ID', 'UNEM Origin', 'UNEM Destination'])
+   file_CRIM = pd.read_excel(file_Matriks_OD, index_col=0, usecols=['ID', 'CRIM Origin', 'CRIM Destination'])
+   file_DENS = pd.read_excel(file_Matriks_OD, index_col=0, usecols=['ID', 'DENS Origin', 'DENS Destination'])
+   file_LIT = pd.read_excel(file_Matriks_OD, index_col=0, usecols=['ID', 'LIT Origin', 'LIT Destination'])
+   file_INF = pd.read_excel(file_Matriks_OD, index_col=0, usecols=['ID', 'INF Origin', 'INF Destination'])
+   file_MIN = pd.read_excel(file_Matriks_OD, index_col=0, usecols=['ID', 'MIN Origin', 'MIN Destination'])
+
    file_Cases = document.File_Cases
 
    '''
@@ -86,6 +91,8 @@ def resultPageRank(request, pk):
 
    files_csv = [file_LIT, file_CRIM, file_MAN, file_DENS, file_GDP, file_INF, file_UNEM, file_MIN]
 
+   print(files_csv)
+
    OD_Matrix_List = [] # Prepare list to store the OD Matrix of each file
 
    coeff = [0.005888626148285406, 0.0404483855943423, 0.0983687893650872, 0.02609756597768234, 0.8263595276993987, -0.05640590716007701, 0.09487233256102165, -0.06171179914881331]
@@ -93,14 +100,27 @@ def resultPageRank(request, pk):
    # Read files, create graph for each, and construct OD Matrix
    for file in files_csv:
 
-      # Read the file which consists of a list of edges representing regions in East Java Province
-      df_graph = pd.read_csv(file, index_col = 0)
+      print("File")
+      print(file)
+
+      # Assign value to other variables
+      df_graph = file
+
+      # Rename data frame columns' name
+      df_graph.columns = ['Origin', 'Destination']
+
+      print("DF_Graph")
+      print(df_graph)
+
+      df_graph = df_graph[df_graph['Origin'].notna()]
 
       # Create graph
       graph = make_DiGraph(df_graph, origin_col = 'Origin', destination_col = 'Destination')
 
       # Create list of OD Matrix
       OD_Matrix_List.append(create_ODMatrix(graph))
+
+      print(OD_Matrix_List)
 
    # Calculate scores
    final_ranks = run_Modified_PageRank(graph, OD_Matrix_List, coeff)
@@ -123,25 +143,32 @@ def resultPageRank(request, pk):
 
    index_list = list(range(1, len(final_ranks) + 1))
 
-   if wilayah == 'east_java':
+   for k, v in final_ranks.items():
+            final_ranks[k] = round(v, 3)
+
+   if wilayah == 'Jawa Timur':
       od_file = 'static/documents/source/Jawa Timur - OD_Matriks.csv'
       spatial_file = 'static/spatial file/Jawa Timur/RBI250K_BATAS_WILAYAH_AR.shp'
 
       pict = draw_spatial_graph_east_java(spatial_file, od_file, final_ranks, thres)
 
-   if wilayah == 'central_java':
+   if wilayah == 'Jawa Tengah':
       od_file = 'static/documents/source/Jawa Tengah - OD_Matriks.csv'
       spatial_file = 'static/spatial file/Jawa Tengah/RBI250K_BATAS_WILAYAH_AR.shp'
 
       pict = draw_spatial_graph_central_java(spatial_file, od_file, final_ranks, thres)
    
-   if wilayah == 'bali':
+   if wilayah == 'Bali':
       od_file = 'static/documents/source/Bali - OD_Matriks.csv.csv'
       spatial_file = 'static/spatial file/Bali/RBI250K_BATAS_WILAYAH_AR.shp'
 
       pict = draw_spatial_graph_bali(spatial_file, od_file, final_ranks, thres)
    
-   context = {'document':document, 'final_ranks':final_ranks, 'corr_coeff':corr_coeff, 'htdict':htdict, 'thres':thres, 'index_list':index_list, 'pict':pict}
+   thres_round = list(np.around(np.array(thres), 2))
+   thres_upper = thres_round[1]
+   thres_lower = thres_round[0]
+
+   context = {'document':document, 'final_ranks':final_ranks, 'corr_coeff':corr_coeff, 'htdict':htdict, 'thres':thres, 'index_list':index_list, 'pict':pict, 'thres_upper':thres_upper, 'thres_lower':thres_lower}
    return render(request, "PageRank/result.html", context)
 
 # ------------------------------- Distance Decay PageRank -----------------------------
@@ -189,6 +216,9 @@ def resultDDPR(request, pk):
    corr = pearsonCorr(score[0],case)
    corr = round(corr, 3)
 
+   score = score[0]
+
+   print(score)
    # Perform Head-Tails Breaks
    risk1, thres1 = htbreak(case, 3)
 

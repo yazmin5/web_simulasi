@@ -10,21 +10,21 @@
         <div class="justify-content-between row">
             <div class="col-12 col-lg-12">
                 <div class="rehomes-comment-form mb-80 wow fadeInUp" data-wow-delay="200ms">
-                    <h4 class="mb-30">Hasil Perhitungan dan Simulasi Menggunakan Algoritme Modifikasi Graph PageRank</h4>
+                    <h4 class="mb-30">Hasil Perhitungan dan Simulasi Modifikasi Graph PageRank</h4>
                     
                     <!-- Brief Introductions -->
                     <div class="col-12 col-lg-12 information-area mb-80 wow update">
                     <table class="table">
                         <tr>
-                            <th>Nama </th>
+                            <th>Wilayah </th>
                             <th>Tanggal</th>
-                            <th>Hasil Prediksi</th>
+                            <th>Hasil Simulasi</th>
                         </tr>
                         {% for i in documents %}
                             <tr>
-                                <td> {{ i.Nama }} </td>
+                                <td> {{ i.Wilayah }} </td>
                                 <td> {{ i.Tanggal }} </td>
-                                <td> <p class=""><a style="color:black;" href="{% url 'resultPageRank' i.id %}"> Hasil </a></p> </td>
+                                <td> <p class=""><a style="color:black;" href="{% url 'resultPageRank' i.id %}"> Lihat Hasil </a></p> </td>
                             </tr>
                         {% endfor %}
                     </table>

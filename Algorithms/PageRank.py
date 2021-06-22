@@ -45,7 +45,7 @@ def create_ODMatrix(g):
                 numerator = float(OD_Transpose[i, j])
                 OD_Matrix[i, j] = numerator / denominator
 
-    print('Preparation Done, Start Iterating...')
+    # print('Preparation Done, Start Iterating...')
 
     return OD_Matrix
 
@@ -142,11 +142,6 @@ def htbreak(adic, g = 3):
 
     # print(alist2)
 
-    print(adic2)
-    print(breaks)
-
-    print('...' * 20)
-
     return adic2, breaks
 
 def get_graph():
@@ -173,23 +168,22 @@ def draw_spatial_graph_east_java(spatial_file, od_file, final_ranks, thres):
     gdf_points['Long'] = gdf_points.geometry.x
     gdf_points['Lat'] = gdf_points.geometry.y
 
+    # Convert dictionary to dataframe
     final_ranks = pd.DataFrame(final_ranks.items(), columns = ['WADMKK', 'PageRank'])
-
-    print(final_ranks)
 
     final_ranks['WADMKK'] = final_ranks['WADMKK'].astype(str)
     gdf_points['WADMKK'] = gdf_points['WADMKK'].astype(str)
     
+    # Append shp file and PageRank score
     gdf_points_merge = pd.merge(gdf_points, final_ranks, on='WADMKK') 
+
     gdf_points_merge['PageRank Label'] = gdf_points_merge['PageRank'].round(3)
 
     gdf_points_merge['PageRank Label'] = gdf_points_merge['PageRank Label'].astype(str)
 
-    gdf_points_merge['Node Label'] = gdf_points_merge['WADMKK'] + ' ' + '(' +gdf_points_merge['PageRank Label'] + ')'
+    gdf_points_merge['Node Label'] = gdf_points_merge['WADMKK'] + ' ' + '(' + gdf_points_merge['PageRank Label'] + ')'
 
     label_list = dict(zip(gdf_points_merge['WADMKK'], gdf_points_merge['Node Label']))
-    
-    print(gdf_points_merge)
 
     # Manual adjustment to handle too close node which affecting overlapping label between nodes
     
@@ -295,8 +289,6 @@ def draw_spatial_graph_central_java(spatial_file, od_file, final_ranks, thres):
 
     final_ranks = pd.DataFrame(final_ranks.items(), columns = ['WADMKK', 'PageRank'])
 
-    print(final_ranks)
-
     final_ranks['WADMKK'] = final_ranks['WADMKK'].astype(str)
     gdf_points['WADMKK'] = gdf_points['WADMKK'].astype(str)
     
@@ -308,8 +300,6 @@ def draw_spatial_graph_central_java(spatial_file, od_file, final_ranks, thres):
     gdf_points_merge['Node Label'] = gdf_points_merge['WADMKK'] + ' ' + '(' +gdf_points_merge['PageRank Label'] + ')'
 
     label_list = dict(zip(gdf_points_merge['WADMKK'], gdf_points_merge['Node Label']))
-    
-    print(gdf_points_merge)
 
     # Manual adjustment to handle too close node which affecting overlapping label between nodes
 
@@ -386,8 +376,6 @@ def draw_spatial_graph_bali(spatial_file, od_file, final_ranks, thres):
     gdf_points['Lat'] = gdf_points.geometry.y
 
     final_ranks = pd.DataFrame(final_ranks.items(), columns = ['WADMKK', 'PageRank'])
-
-    print(final_ranks)
 
     final_ranks['WADMKK'] = final_ranks['WADMKK'].astype(str)
     gdf_points['WADMKK'] = gdf_points['WADMKK'].astype(str)
