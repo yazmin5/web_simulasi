@@ -5,7 +5,7 @@ from .forms import DocsForms
 from .forms import DocsFormsPageRank
 from .forms import DocsFormsDDPR
 from .Epirank import run_epiRank, make_DiGraph, get_exfac, htbreak, draw_graph
-from .PageRank import make_DiGraph, create_ODMatrix, run_Modified_PageRank, make_Dict, get_pearson_cor, htbreak, draw_spatial_graph_central_java, draw_spatial_graph_east_java, draw_spatial_graph_bali
+from .PageRank import *
 from .DDPR import cre_DiGraph, draw_spatial_graph, run_ddpr, makeDict, pearsonCorr, htbreak, draw_spatial_graph
 import pandas as pd
 import numpy as np
@@ -89,28 +89,52 @@ def resultPageRank(request, pk):
    ATTENTION: files_csv and coeff MUST be in the same order
    '''
 
+   print(file_Cases)
+   
    files_csv = [file_LIT, file_CRIM, file_MAN, file_DENS, file_GDP, file_INF, file_UNEM, file_MIN]
-
-   print(files_csv)
 
    OD_Matrix_List = [] # Prepare list to store the OD Matrix of each file
 
-   coeff = [0.005888626148285406, 0.0404483855943423, 0.0983687893650872, 0.02609756597768234, 0.8263595276993987, -0.05640590716007701, 0.09487233256102165, -0.06171179914881331]
+   # coeff = [0.005888626148285406, 0.0404483855943423, 0.0983687893650872, 0.02609756597768234, 0.8263595276993987, -0.05640590716007701, 0.09487233256102165, -0.06171179914881331]
+
+   ### --- Coeff Regr Each Region --- ###
+   if wilayah == 'Jawa Timur':
+      file_Demog = 'static/documents/source/Jawa Timur - Demo, Soc, Eco.csv'
+      coeff = get_coeff(file_Demog, file_Cases, wilayah)
+      coeff = list(coeff.values())
+
+   if wilayah == 'Jawa Tengah':
+      file_Demog = 'static/documents/source/Jawa Tengah - Demo, Soc, Eco.csv'
+      coeff = get_coeff(file_Demog, file_Cases, wilayah)
+      coeff = list(coeff.values())
+      
+   if wilayah == 'Bali':
+      file_Demog = 'static/documents/source/Bali - Demo, Soc, Eco.csv'
+      coeff = get_coeff(file_Demog, file_Cases, wilayah)
+      coeff = list(coeff.values())
+
+      def MinMax(x, a, b):
+         norm = [ ((b - a) * ((float(i) - min(x)) / (max(x) - min(x))) - b ) for i in x]
+
+         return norm
+
+      coeff_norm = MinMax(coeff, -0.5, 0.5)
+      coeff = coeff_norm
+
+   # ### --- Coeff Regr Each Region --- ###
+   # file_Demog = 'static/documents/source/All - Demo, Soc, Eco.csv'
+   # coeff = get_coeff(file_Demog, 'static/documents/source/All - Covid-19_Cases.csv', wilayah)
+   # coeff = list(coeff.values())
+
+   print(coeff)
 
    # Read files, create graph for each, and construct OD Matrix
    for file in files_csv:
-
-      print("File")
-      print(file)
-
       # Assign value to other variables
       df_graph = file
 
       # Rename data frame columns' name
       df_graph.columns = ['Origin', 'Destination']
-
-      print("DF_Graph")
-      print(df_graph)
 
       df_graph = df_graph[df_graph['Origin'].notna()]
 
@@ -120,13 +144,14 @@ def resultPageRank(request, pk):
       # Create list of OD Matrix
       OD_Matrix_List.append(create_ODMatrix(graph))
 
-      print(OD_Matrix_List)
-
    # Calculate scores
    final_ranks = run_Modified_PageRank(graph, OD_Matrix_List, coeff)
    
    # Read the file which consists of number of Covid-19 cases in East Java Province by regions
+   file_Cases.seek(0)
    df_cases = pd.read_csv(file_Cases, index_col = 0)
+
+   print(df_cases)
 
    # Convert data frame to dictionary format
    cases = make_Dict(df_cases)
@@ -159,7 +184,7 @@ def resultPageRank(request, pk):
       pict = draw_spatial_graph_central_java(spatial_file, od_file, final_ranks, thres)
    
    if wilayah == 'Bali':
-      od_file = 'static/documents/source/Bali - OD_Matriks.csv.csv'
+      od_file = 'static/documents/source/Bali - OD_Matriks.csv'
       spatial_file = 'static/spatial file/Bali/RBI250K_BATAS_WILAYAH_AR.shp'
 
       pict = draw_spatial_graph_bali(spatial_file, od_file, final_ranks, thres)
@@ -172,7 +197,6 @@ def resultPageRank(request, pk):
    return render(request, "PageRank/result.html", context)
 
 # ------------------------------- Distance Decay PageRank -----------------------------
-
 def DDPR(request):
    form = DocsFormsDDPR()
    if request.method == 'POST':

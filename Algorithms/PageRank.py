@@ -10,6 +10,8 @@ matplotlib.use("TkAgg")
 import base64
 from io import BytesIO
 from scipy.stats import pearsonr
+import statsmodels.api as sm
+from sklearn.preprocessing import MinMaxScaler
 
 # Create Directed Graph
 def make_DiGraph(df, origin_col = 'Origin', destination_col = 'Destination'):
@@ -49,6 +51,60 @@ def create_ODMatrix(g):
 
     return OD_Matrix
 
+# Get variable's coefficient
+def get_coeff(file_Demog, file_Cases, wilayah):
+    # Read the file which consists of demographic, social, and economic data in East Java Province by regions
+    df_const = pd.read_csv(file_Demog)
+
+    # Delete unused columns
+    del df_const['No']
+    del df_const['Kabupaten/Kota']
+
+    if wilayah == 'Bali':
+        df_const['Jumlah Penduduk Laki-Laki'] = df_const['Jumlah Penduduk Laki-Laki'].astype(str)
+
+    # Adjust features data type
+    df_const['Jumlah Penduduk Laki-Laki'] = df_const['Jumlah Penduduk Laki-Laki'].str.replace('.','').astype(int)
+    df_const['Upah Minimum Regional'] = df_const['Upah Minimum Regional'].str.replace(',','').astype(np.float64)
+    df_const['Rata-Rata Pendapatan Bersih Pekerja Informal'] = df_const['Rata-Rata Pendapatan Bersih Pekerja Informal'].str.replace(',','').astype(np.float64)
+
+    # Rename features name
+    df_const = df_const.rename({'Produk Domestik Regional Bruto' : 'PDB Regional',
+                                'Rata-Rata Pendapatan Bersih Pekerja Informal' : 'Rata-Rata Pendapatan Pekerja Informal'}, axis = 1)
+
+    # Read the file which consists of number of Covid-19 cases in East Java Province by regions
+    df_cases = pd.read_csv(file_Cases, index_col = 0)
+
+    # Delete unused column
+    del df_cases['Node']
+
+    # Perform min-max normalization
+    # Create a scaler object
+    scaler = MinMaxScaler() # Default 0,1 scaling
+    
+    # Normalizing data
+    df_const_normalized = pd.DataFrame(scaler.fit_transform(df_const), columns = df_const.columns)
+
+    # Normalizing data
+    df_cases_normalized = pd.DataFrame(scaler.fit_transform(df_cases), columns = df_cases.columns)
+
+    X_Const = sm.add_constant(df_const_normalized.to_numpy()) # add_constant is not mandatory
+
+    Y = df_cases_normalized['Cases']
+    Y = list(Y)
+
+    mlr_model_stats = sm.OLS(Y, X_Const)
+    mlr_reg_stats = mlr_model_stats.fit()
+
+    coeff_ols = mlr_reg_stats.params.tolist()
+    del coeff_ols[0]
+
+    coeff_dict = dict(zip(df_const_normalized.columns.tolist(), coeff_ols))
+
+    coeff_dict_sorted = dict(sorted(coeff_dict.items()))
+
+    return coeff_dict_sorted
+
 # Calculate PageRank Score
 def run_Modified_PageRank(g, OD_Matrix, coeff, d = 0.95, number_of_loops = 10000):
     N_Count = g.number_of_nodes()
@@ -56,7 +112,7 @@ def run_Modified_PageRank(g, OD_Matrix, coeff, d = 0.95, number_of_loops = 10000
     ranks = np.array(np.ones((1, N_Count)) / float(N_Count), dtype = np.float64).transpose() # Initial PageRank Score
 
     sumofodm = np.array(np.zeros((1, N_Count))).transpose() # Sum of OD Matrix
-
+    
     # Calculate PageRank score
     for i in range(1, number_of_loops + 1):
         old_ranks = copy.copy(ranks)
