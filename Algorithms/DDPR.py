@@ -231,12 +231,12 @@ def draw_spatial_graph(spatial_file, od_file, final_ranks, thres, coordinate, ca
     # Create a list of color to adjust color for nodes in graph based on threshold produced by Head-Tails Breaks classification
     color_map = []
 
-    for node, cases in zip(gdf_points_merge['Nama'], gdf_points_merge['cases']):
-        if cases > thres[1]:
+    for node, score in zip(gdf_points_merge['Nama'], gdf_points_merge['Skor']):
+        if score > thres[1]:
             color_map.append('red') # Color for category 2 (High Risk of Covis-19 Spreading)
-        if cases > thres[0] and cases < thres[1]:
+        if score > thres[0] and score < thres[1]:
             color_map.append('orange') # Color for category 1 (Moderate Risk of Covis-19 Spreading)
-        if cases < thres[0]:
+        if score < thres[0]:
             color_map.append('yellow') # Color for category 0 (Low Risk of Covis-19 Spreading)
 
     # Plot the base map and set figure size

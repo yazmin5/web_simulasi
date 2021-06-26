@@ -220,7 +220,7 @@ def resultDDPR(request, pk):
 
    print(score)
    # Perform Head-Tails Breaks
-   risk1, thres1 = htbreak(case, 3)
+   risk1, thres1 = htbreak(skor, 3)
 
    risk_replace = {2: 'Risiko Tinggi', 1:'Risiko Sedang', 0:'Risiko Rendah'}
    for x, y in risk1.items():
@@ -229,7 +229,7 @@ def resultDDPR(request, pk):
    index = list(range(1, len(skor) + 1))
 
    od = 'static/documents/OD Matrix 83,25 KM.csv'
-   spatial_file = 'static/spatial file/Jawa Timur/RBI250K_BATAS_WILAYAH_AR.shp'
+   spatial_file = 'static/spatial file/Jawa Timur/jatim-kereta.shp'
    coordinate = 'static/spatial file/Jawa Timur/titik kereta.shp'
 
    gambar = draw_spatial_graph(spatial_file, od, skor, thres1, coordinate, df_case)
